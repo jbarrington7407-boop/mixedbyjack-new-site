@@ -38,6 +38,18 @@ var TRACKS = [
   }
 ];
 
+/* ---------- FOH board mixes (portfolio) ---------- */
+var BOARD_MIXES = [
+  { title: "Time Loving You", artist: "Jakota Wass", src: "assets/audio/board/jakota-wass-time-loving-you.mp3" },
+  { title: "Don't Let Your Enemies Get You to Hate Your Friends", artist: "The Novelists", src: "assets/audio/board/the-novelists-dont-let-your-enemies.mp3" },
+  { title: "Norah Jones Cover", artist: "Salty Sally", src: "assets/audio/board/salty-sally-nora-jones-cover.mp3" },
+  { title: "The Music Never Stopped", artist: "Live board mix", src: "assets/audio/board/the-music-never-stopped.mp3" },
+  { title: "Redneck Man", artist: "Snippet", src: "assets/audio/board/redneck-man.mp3" }
+];
+
+/* Every player on the page registers here so only one plays at a time */
+var ALL_PLAYERS = [];
+
 /* =========================================================
    Nav
    ========================================================= */
@@ -94,7 +106,7 @@ var TRACKS = [
   if (!listEl) return;
   var BAR_COUNT = 88;
   var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-  var allPlayers = [];
+  var allPlayers = ALL_PLAYERS;
 
   function generateBars(seed){
     var bars = [], s = seed || 1;
@@ -277,6 +289,102 @@ var TRACKS = [
   } else {
     listEl.querySelectorAll(".reveal").forEach(function(c){ c.classList.add("in"); });
   }
+})();
+
+/* =========================================================
+   FOH board mix players (single track)
+   ========================================================= */
+(function(){
+  var listEl = document.getElementById("board-players");
+  if (!listEl) return;
+  var BAR_COUNT = 64;
+
+  function bars(seed){
+    var out = [], s = seed || 1;
+    for (var i = 0; i < BAR_COUNT; i++){
+      s = (s * 9301 + 49297) % 233280;
+      var r = s / 233280, t = i / BAR_COUNT;
+      var env = Math.sin(t * Math.PI) * 0.4 + 0.6;
+      out.push(Math.max(0.12, Math.min(1, (0.3 + r * 0.7) * env)));
+    }
+    return out;
+  }
+  function fmt(s){
+    if (!isFinite(s) || s < 0) s = 0;
+    var m = Math.floor(s / 60), sec = Math.floor(s % 60);
+    return m + ":" + (sec < 10 ? "0" : "") + sec;
+  }
+
+  BOARD_MIXES.forEach(function(track, index){
+    var row = document.createElement("div");
+    row.className = "board-row reveal";
+    row.innerHTML =
+      '<button class="play-btn" aria-label="Play">' +
+        '<svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>' +
+        '<svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>' +
+      '</button>' +
+      '<div class="board-main">' +
+        '<div class="board-top"><div class="board-info"><h4></h4><p></p></div><span class="time">0:00</span></div>' +
+        '<div class="waveform">' + bars(index * 211 + 37).map(function(h){
+          return '<div class="bar" style="height:' + (h * 100).toFixed(1) + '%"></div>';
+        }).join("") + '</div>' +
+      '</div>';
+    row.querySelector("h4").textContent = track.title;
+    row.querySelector("p").textContent = track.artist;
+
+    var audio = new Audio();
+    audio.preload = "metadata";
+    audio.src = track.src;
+    var playing = false;
+    var timeEl = row.querySelector(".time");
+    var wave = row.querySelector(".waveform");
+    var barEls = row.querySelectorAll(".bar");
+
+    audio.addEventListener("loadedmetadata", function(){ timeEl.textContent = fmt(audio.duration); });
+    audio.addEventListener("error", function(){ row.classList.add("error"); timeEl.textContent = "unavailable"; });
+
+    function play(){
+      ALL_PLAYERS.forEach(function(p){ if (p !== api) p.pause(); });
+      var pr = audio.play();
+      if (pr && pr.then) pr.then(function(){ playing = true; row.classList.add("playing"); }).catch(function(){});
+      else { playing = true; row.classList.add("playing"); }
+    }
+    function pause(){ audio.pause(); playing = false; row.classList.remove("playing"); }
+    row.querySelector(".play-btn").addEventListener("click", function(){ playing ? pause() : play(); });
+
+    audio.addEventListener("timeupdate", function(){
+      var d = audio.duration || 0, t = audio.currentTime;
+      timeEl.textContent = fmt(t) + " / " + fmt(d);
+      var n = Math.floor((d > 0 ? t / d : 0) * barEls.length);
+      for (var i = 0; i < barEls.length; i++) barEls[i].classList.toggle("played", i < n);
+    });
+    audio.addEventListener("ended", function(){
+      pause(); audio.currentTime = 0;
+      barEls.forEach(function(b){ b.classList.remove("played"); });
+      timeEl.textContent = fmt(audio.duration);
+    });
+
+    function scrubAt(x){
+      var r = wave.getBoundingClientRect();
+      var pct = Math.max(0, Math.min(1, (x - r.left) / r.width));
+      if (audio.duration) audio.currentTime = pct * audio.duration;
+    }
+    wave.addEventListener("click", function(e){ scrubAt(e.clientX); });
+    wave.addEventListener("touchstart", function(e){ e.preventDefault(); scrubAt(e.touches[0].clientX); }, { passive:false });
+    wave.addEventListener("touchmove", function(e){ e.preventDefault(); scrubAt(e.touches[0].clientX); }, { passive:false });
+
+    var api = { play:play, pause:pause };
+    ALL_PLAYERS.push(api);
+    listEl.appendChild(row);
+  });
+
+  var rows = listEl.querySelectorAll(".reveal");
+  if ("IntersectionObserver" in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){ if (en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target); } });
+    }, { threshold:0.08 });
+    rows.forEach(function(r){ io.observe(r); });
+  } else { rows.forEach(function(r){ r.classList.add("in"); }); }
 })();
 
 /* =========================================================
