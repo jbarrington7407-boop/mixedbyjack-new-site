@@ -19,7 +19,7 @@
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;scroll-padding-top:var(--nav-h);background:var(--bg)}
+html{overflow-x:hidden;scroll-behavior:smooth;scroll-padding-top:var(--nav-h);background:var(--bg)}
 body{
   font-family:"Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   color:var(--ink);background:var(--bg);
@@ -567,8 +567,8 @@ body.modal-open{overflow:hidden}
 .choice input:checked + span{background:linear-gradient(135deg,var(--purple-bright),var(--purple-deep));border-color:transparent;box-shadow:0 6px 20px rgba(168,85,247,.45)}
 .choice input:focus-visible + span{box-shadow:0 0 0 4px rgba(168,85,247,.35)}
 .field.invalid .choice span{border-color:#ff8a8a}
-.dropzone{
-  position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+.field .dropzone,.dropzone{
+  position:relative;font-weight:400;letter-spacing:normal;margin-bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
   padding:26px 18px;border-radius:16px;text-align:center;cursor:pointer;
   border:1.5px dashed rgba(192,132,252,.5);background:rgba(168,85,247,.07);transition:background .2s,border-color .2s;
 }
@@ -577,7 +577,9 @@ body.modal-open{overflow:hidden}
 .dropzone .icon{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--purple-bright),var(--purple-deep));box-shadow:0 6px 18px rgba(168,85,247,.45)}
 .dropzone .icon svg{width:22px;height:22px;fill:#fff}
 .dropzone strong{font-size:15px}
-.dropzone small{font-size:12.5px;color:var(--ink-faint)}
+.dropzone strong{display:block;font-weight:600;line-height:1.4}
+.dropzone small{display:block;font-size:12.5px;line-height:1.5;color:var(--ink-faint);max-width:30ch}
+.field .dropzone{display:flex}
 .file-list{list-style:none;display:grid;gap:8px;margin-top:10px}
 .file-list li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border-radius:12px;font-size:13.5px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1)}
 .file-list .fname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -608,3 +610,24 @@ body.modal-open{overflow:hidden}
 /* Testimonials hidden for now: title only */
 .testimonials{padding-bottom:clamp(20px,3vw,40px)}
 .testimonials .section-head{margin-bottom:0}
+
+/* ---------- Mobile polish ---------- */
+@supports (overflow:clip){html,body{overflow-x:clip}}
+@media (max-width:900px){
+  /* slide in from below on phones so nothing starts off-screen and widens the page */
+  .quote.from-left,.quote.from-right,
+  .release.from-left,.release.from-right,
+  .about-row.from-left,.about-row.from-right{transform:translateY(26px)}
+  .quote.in,.release.in,.about-row.in{transform:none}
+}
+@media (max-width:560px){
+  :root{--side:20px}
+  .section-head{margin-left:auto;margin-right:auto}
+  .h2{font-size:clamp(34px,10vw,44px)}
+  .release-embed iframe{width:100%}
+  .about-photo{max-width:100%}
+}
+@media (max-width:560px){
+  .hero-ctas{flex-direction:column;align-items:center}
+  .hero-ctas .btn{width:100%;max-width:300px}
+}
