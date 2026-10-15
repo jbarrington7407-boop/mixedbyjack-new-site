@@ -197,6 +197,7 @@ body.modal-open{overflow:hidden}
 @media (max-width:560px){.svc-body{padding:22px 22px 24px}}
 
 .trust{margin-top:clamp(64px,8vw,104px);text-align:center}
+.trust-title{font-weight:700;font-size:clamp(21px,1.7vw,25px);letter-spacing:-0.02em;line-height:1.2;color:#fff;margin-bottom:20px}
 .trust .label{
   display:inline-block;position:relative;
   font-weight:600;font-size:12px;letter-spacing:.3em;text-transform:uppercase;

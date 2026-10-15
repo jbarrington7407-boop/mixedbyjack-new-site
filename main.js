@@ -143,7 +143,6 @@ var ALL_PLAYERS = [];
           '<svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>' +
           '<svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>' +
         '</button>' +
-        '<span class="status"><span class="dot"></span><span class="label">BEFORE</span></span>' +
       '</div><span class="time">0:00 / 0:00</span></div>' +
       '<div class="error-msg">Audio failed to load.</div>';
     card.querySelector(".track-info h3").textContent = track.title;
@@ -161,7 +160,6 @@ var ALL_PLAYERS = [];
     var barEls = card.querySelectorAll(".bar");
     var toggle = card.querySelector(".ab-toggle");
     var toggleBtns = card.querySelectorAll(".ab-toggle button");
-    var statusLabel = card.querySelector(".status .label");
 
     function initWebAudio(){
       if (audioCtx) return;
@@ -210,7 +208,6 @@ var ALL_PLAYERS = [];
       card.setAttribute("data-active", version);
       toggle.setAttribute("data-state", version);
       toggleBtns.forEach(function(b){ b.classList.toggle("active", b.getAttribute("data-version") === version); });
-      statusLabel.textContent = version.toUpperCase();
       if (audioCtx && gainBefore && gainAfter){
         var now = audioCtx.currentTime;
         gainBefore.gain.cancelScheduledValues(now); gainAfter.gain.cancelScheduledValues(now);
