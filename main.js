@@ -42,9 +42,9 @@ var TRACKS = [
 var BOARD_MIXES = [
   { title: "Time Loving You", artist: "Jakota Wass", src: "assets/audio/board/jakota-wass-time-loving-you.mp3" },
   { title: "Don't Let Your Enemies Get You to Hate Your Friends", artist: "The Novelists", src: "assets/audio/board/the-novelists-dont-let-your-enemies.mp3" },
-  { title: "Norah Jones Cover", artist: "Salty Sally", src: "assets/audio/board/salty-sally-nora-jones-cover.mp3" },
-  { title: "The Music Never Stopped", artist: "Live board mix", src: "assets/audio/board/the-music-never-stopped.mp3" },
-  { title: "Redneck Man", artist: "Snippet", src: "assets/audio/board/redneck-man.mp3" }
+  { title: "Don't Know Why (Norah Jones Cover)", artist: "Salty Sally", src: "assets/audio/board/salty-sally-dont-know-why.mp3" },
+  { title: "The Music Never Stopped (The Grateful Dead Cover)", artist: "The Coffis Brothers", src: "assets/audio/board/coffis-brothers-the-music-never-stopped.mp3" },
+  { title: "Redneck Man", artist: "Jakota Wass", src: "assets/audio/board/redneck-man.mp3" }
 ];
 
 /* Every player on the page registers here so only one plays at a time */
