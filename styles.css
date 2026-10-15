@@ -605,3 +605,6 @@ body.modal-open{overflow:hidden}
   *,*::before,*::after{animation:none!important;transition:none!important}
   .reveal,.from-left,.from-right{opacity:1;transform:none}
 }
+/* Testimonials hidden for now: title only */
+.testimonials{padding-bottom:clamp(20px,3vw,40px)}
+.testimonials .section-head{margin-bottom:0}
