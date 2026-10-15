@@ -149,8 +149,8 @@ body.modal-open{overflow:hidden}
 .hero h1{font-weight:700;font-size:clamp(44px,7.4vw,96px);line-height:1.04;letter-spacing:-0.035em;text-shadow:0 2px 30px rgba(0,0,0,.5)}
 .hero h1 .accent{padding-bottom:.14em}
 .hero-rule{width:64px;height:1px;margin:24px auto;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent)}
-.hero .subhead{font-size:clamp(17px,1.6vw,22px);line-height:1.5;color:var(--ink-soft);text-shadow:0 2px 18px rgba(0,0,0,.5)}
-.hero .subhead strong{color:#fff;font-weight:600}
+.hero .subhead{max-width:640px;margin-left:auto;margin-right:auto;font-size:clamp(17px,1.6vw,22px);line-height:1.5;color:var(--ink-soft);text-shadow:0 2px 18px rgba(0,0,0,.5)}
+.hero .subhead strong{color:#fff;font-weight:600;white-space:nowrap}
 .hero-ctas{margin-top:38px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
 .scroll-cue{
   position:absolute;bottom:24px;left:50%;transform:translateX(-50%);z-index:2;
