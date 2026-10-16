@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.mixedbyjack.net/</loc>
-    <lastmod>2026-10-16</lastmod>
+  </url>
+  <url>
+    <loc>https://www.mixedbyjack.net/online-mixing</loc>
+  </url>
+  <url>
+    <loc>https://www.mixedbyjack.net/online-mastering</loc>
+  </url>
+  <url>
+    <loc>https://www.mixedbyjack.net/rock-mixing</loc>
+  </url>
+  <url>
+    <loc>https://www.mixedbyjack.net/country-mixing</loc>
+  </url>
+  <url>
+    <loc>https://www.mixedbyjack.net/indie-pop-mixing</loc>
   </url>
 </urlset>
