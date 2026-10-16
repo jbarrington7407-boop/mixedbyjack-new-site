@@ -10,7 +10,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 SITE = "https://www.mixedbyjack.net"
 
 # None = not decided yet (shows a dashed "price TBD" box)
-PRICES = {"mix": 400, "master": None, "bundle": None}
+PRICES = {"mix": 300, "master": 100, "bundle": 350}
 
 SPOTIFY = {
     "zines": ("The Zines by The Zines on Spotify", "https://open.spotify.com/embed/album/1oE1qBCgJQDPARWsbunAj9?utm_source=generator", 352),
@@ -206,9 +206,15 @@ def build():
                     {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": plain(a)}} for q, a in p["faq"]]},
             ],
         }
-        if PRICES["mix"] and p["slug"] != "online-mastering":
-            ld["@graph"][0]["offers"] = {"@type": "Offer", "price": str(PRICES["mix"]), "priceCurrency": "USD",
-                                         "description": "Mixing, per song"}
+        offers = []
+        if p["slug"] != "online-mastering" and PRICES["mix"]:
+            offers.append({"@type": "Offer", "price": str(PRICES["mix"]), "priceCurrency": "USD", "description": "Mixing, per song"})
+        if p["slug"] == "online-mastering" and PRICES["master"]:
+            offers.append({"@type": "Offer", "price": str(PRICES["master"]), "priceCurrency": "USD", "description": "Mastering, per song"})
+        if PRICES["bundle"]:
+            offers.append({"@type": "Offer", "price": str(PRICES["bundle"]), "priceCurrency": "USD", "description": "Mixing and mastering bundle, per song"})
+        if offers:
+            ld["@graph"][0]["offers"] = offers
 
         embeds = "".join(
             f'<iframe title="{esc(SPOTIFY[k][0])}" src="{SPOTIFY[k][1]}" height="{SPOTIFY[k][2]}" '
