@@ -10,7 +10,7 @@ var FORM_ENDPOINT = "";
 /* Both forms post to one Google Apps Script web app (see apps-script/SETUP.md).
    Paste the web app URL here once, and every submission is added to your
    Google Sheet and the sender gets a confirmation email from your business address. */
-var SHEETS_ENDPOINT = "https://script.google.com/macros/s/AKfycbyLmwOWKURDm26MhFlL1osb0cwRJohextIMhj7hkLKsF2LkE7Fq0jaeA9k2_58IpqtwKA/exec";
+var SHEETS_ENDPOINT = "https://script.google.com/macros/s/AKfycbyyUq5bsQBIeilbNO9lFakhoYgDSTUCPJiuHzKZwpzLr3lyq1dp6e_J34aBnX0jG1WDMw/exec";
 function postToSheets(type, formData){
   var body = new URLSearchParams();
   formData.forEach(function(v, k){ if (typeof v === "string") body.append(k, v); });
