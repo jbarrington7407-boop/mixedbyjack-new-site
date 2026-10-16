@@ -382,6 +382,7 @@
     <p class="sub">Tell me about your project and I'll get back to you with next steps.</p>
 
     <form class="form" id="intake-form" novalidate>
+      <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;height:0;width:0">
       <div class="row-2">
         <div class="field" data-required>
           <label for="f-first">First name <span class="req">*</span></label>
@@ -422,19 +423,8 @@
       </div>
 
       <div class="field">
-        <span class="label">Upload your music <span class="opt">(optional)</span></span>
-        <label class="dropzone" id="dropzone">
-          <input type="file" id="f-files" name="files" multiple accept="audio/*,.wav,.aif,.aiff,.mp3,.flac,.m4a,.zip">
-          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M11 16V7.8l-3.3 3.3-1.4-1.4L12 4l5.7 5.7-1.4 1.4L13 7.8V16h-2zm-6 4v-5h2v3h10v-3h2v5H5z"/></svg></span>
-          <strong>Drop files here or click to browse</strong>
-          <small>Demos, rough mixes, or stems (WAV, AIFF, MP3, FLAC, ZIP)</small>
-        </label>
-        <ul class="file-list" id="file-list"></ul>
-      </div>
-
-      <div class="field">
-        <label for="f-link">Or share a link <span class="opt">(optional)</span></label>
-        <input class="input" id="f-link" name="file_link" type="url" placeholder="Dropbox, Google Drive, or WeTransfer link">
+        <label for="f-link">Link to your music <span class="opt">(optional)</span></label>
+        <input class="input" id="f-link" name="file_link" type="url" placeholder="Dropbox, Google Drive, or WeTransfer link to demos or stems">
       </div>
 
       <button class="btn btn-lg" type="submit" id="f-submit">Send My Project <span class="arrow">→</span></button>
@@ -457,6 +447,7 @@
     <h2 id="contact-title">Get in <span class="accent">Touch</span></h2>
     <p class="sub">Questions, live bookings, or anything else. Send me a message and I'll get back to you.</p>
     <form class="form" id="contact-form" novalidate>
+      <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;height:0;width:0">
       <div class="row-2">
         <div class="field" data-required>
           <label for="c-name">Name <span class="req">*</span></label>

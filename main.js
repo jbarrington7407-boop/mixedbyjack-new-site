@@ -7,6 +7,17 @@
    shows the success screen but sends nothing). Paste a form service URL here
    (e.g. a Formspree endpoint) to start receiving submissions. */
 var FORM_ENDPOINT = "";
+/* Both forms post to one Google Apps Script web app (see apps-script/SETUP.md).
+   Paste the web app URL here once, and every submission is added to your
+   Google Sheet and the sender gets a confirmation email from your business address. */
+var SHEETS_ENDPOINT = "";
+function postToSheets(type, formData){
+  var body = new URLSearchParams();
+  formData.forEach(function(v, k){ if (typeof v === "string") body.append(k, v); });
+  body.append("form_type", type);
+  // no-cors: Apps Script can't answer cross-site reads, so success = request left the browser
+  return fetch(SHEETS_ENDPOINT, { method:"POST", mode:"no-cors", body:body });
+}
 var MAX_UPLOAD_MB = 100; // per-file size limit shown to visitors
 
 /* ---------- Contact form settings ----------
@@ -439,6 +450,7 @@ var ALL_PLAYERS = [];
     });
     renderFiles();
   }
+  if (fileInput && dropzone){
   fileInput.addEventListener("change", function(){ addFiles(fileInput.files); fileInput.value = ""; });
   ["dragenter","dragover"].forEach(function(ev){
     dropzone.addEventListener(ev, function(e){ e.preventDefault(); dropzone.classList.add("drag"); });
@@ -447,6 +459,7 @@ var ALL_PLAYERS = [];
     dropzone.addEventListener(ev, function(e){ e.preventDefault(); dropzone.classList.remove("drag"); });
   });
   dropzone.addEventListener("drop", function(e){ if (e.dataTransfer && e.dataTransfer.files) addFiles(e.dataTransfer.files); });
+  }
 
   /* Validation */
   function validField(field){
@@ -478,8 +491,6 @@ var ALL_PLAYERS = [];
     }
 
     var data = new FormData(form);
-    data.delete("files");
-    files.forEach(function(f){ data.append("files", f, f.name); });
     var first = document.getElementById("f-first").value.trim();
 
     function done(){
@@ -492,13 +503,13 @@ var ALL_PLAYERS = [];
     submitBtn.disabled = true;
     submitBtn.textContent = "Sending...";
 
-    if (!FORM_ENDPOINT){
+    if (!SHEETS_ENDPOINT){
       // Preview mode: nothing is sent
       setTimeout(done, 700);
       return;
     }
-    fetch(FORM_ENDPOINT, { method:"POST", body:data, headers:{ "Accept":"application/json" } })
-      .then(function(r){ if (!r.ok) throw new Error("bad status"); done(); })
+    postToSheets("intake", data)
+      .then(function(){ done(); })
       .catch(function(){
         submitBtn.disabled = false;
         submitBtn.innerHTML = 'Send My Project <span class="arrow">→</span>';
@@ -559,7 +570,7 @@ var ALL_PLAYERS = [];
       modal.classList.add("sent");
       btn.disabled = false; btn.innerHTML = 'Send Message <span class="arrow">→</span>';
     }
-    if (!CONTACT_ENDPOINT){
+    if (!SHEETS_ENDPOINT){
       var subject = "Website message from " + name;
       var body = msg + "\n\n" + name + "\n" + email;
       window.location.href = "mailto:" + CONTACT_EMAIL + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
@@ -568,9 +579,8 @@ var ALL_PLAYERS = [];
     }
     btn.disabled = true; btn.textContent = "Sending...";
     var data = new FormData(form);
-    data.append("_subject", "Website message from " + name);
-    fetch(CONTACT_ENDPOINT, { method:"POST", body:data, headers:{ "Accept":"application/json" } })
-      .then(function(r){ if (!r.ok) throw new Error("bad status"); done(); })
+    postToSheets("contact", data)
+      .then(function(){ done(); })
       .catch(function(){
         btn.disabled = false; btn.innerHTML = 'Send Message <span class="arrow">→</span>';
         alert("Something went wrong sending your message. Please try again, or reach out on Instagram @mixed.by.jack.");
