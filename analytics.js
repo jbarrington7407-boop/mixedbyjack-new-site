@@ -7,7 +7,7 @@
    browser console instead).
    ========================================================= */
 var ANALYTICS = {
-  GA4_ID: "",                // Google Analytics 4, looks like "G-XXXXXXXXXX"
+  GA4_ID: "G-0C77HWDYDK",     // Google Analytics 4, looks like "G-XXXXXXXXXX"
   GOOGLE_ADS_ID: "",         // Google Ads tag, looks like "AW-123456789"
   GOOGLE_ADS_LEAD_LABEL: "", // Google Ads conversion label for project inquiries, e.g. "AbC-D_efG-h12_34-567"
   META_PIXEL_ID: ""          // Meta Pixel ID, numbers only
