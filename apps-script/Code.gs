@@ -28,20 +28,23 @@ var FORMS = {
   contact: { label: 'General Message',      tab: 'General Messages',       color: '#e3f0fb' }
 };
 
+// Where the lead came from (added to the end of every tab)
+var SOURCE_COLS = [['How they found you', 170], ['Traffic source', 160], ['Campaign / keyword', 200], ['Landing page', 160]];
+
 // Every tab: [header, column width]
 var TABS = {
   'All Leads': [
     ['Received', 150], ['Form', 160], ['Name', 140], ['Artist / band', 150], ['Email', 210],
     ['Project type', 110], ['Details', 380], ['Status', 110], ['My notes', 260],
     ['Replied on', 150], ['Reminder sent', 150], ['Follow-up sent', 170]
-  ],
+  ].concat(SOURCE_COLS),
   'Mix & Master Inquiries': [
     ['Received', 150], ['First name', 120], ['Artist / band', 150], ['Email', 210], ['Project type', 110],
     ['Project description', 340], ['Additional notes', 280], ['Music link', 240], ['Status', 110], ['My notes', 260]
-  ],
+  ].concat(SOURCE_COLS),
   'General Messages': [
     ['Received', 150], ['Name', 150], ['Email', 210], ['Message', 420], ['Status', 110], ['My notes', 260]
-  ]
+  ].concat(SOURCE_COLS)
 };
 
 /* ---------------- Website submissions ---------------- */
@@ -58,6 +61,8 @@ function doPost(e) {
         projectType: clean_(p.project_type), description: clean_(p.project_description),
         notes: clean_(p.additional_notes), link: clean_(p.file_link) }
     : { kind: kind, name: clean_(p.name), email: email, message: clean_(p.message) };
+  lead.source = [clean_(p.heard_about), clean_(p.lead_source) || 'Direct / unknown',
+                 clean_(p.lead_campaign), clean_(p.landing_page)];
 
   record_(lead);
   try { confirm_(lead); } catch (err) { console.error('Confirmation email failed', err); }
@@ -79,13 +84,13 @@ function record_(lead) {
       : lead.message;
 
     addRow_(ss.getSheetByName('All Leads'),
-      [now, form.label, lead.name, lead.artist || '', lead.email, lead.projectType || '', details, 'New', '', '', '', '']);
+      [now, form.label, lead.name, lead.artist || '', lead.email, lead.projectType || '', details, 'New', '', '', '', ''].concat(lead.source));
 
     if (lead.kind === 'intake') {
       addRow_(ss.getSheetByName(form.tab),
-        [now, lead.name, lead.artist, lead.email, lead.projectType, lead.description, lead.notes, lead.link, 'New', '']);
+        [now, lead.name, lead.artist, lead.email, lead.projectType, lead.description, lead.notes, lead.link, 'New', ''].concat(lead.source));
     } else {
-      addRow_(ss.getSheetByName(form.tab), [now, lead.name, lead.email, lead.message, 'New', '']);
+      addRow_(ss.getSheetByName(form.tab), [now, lead.name, lead.email, lead.message, 'New', ''].concat(lead.source));
     }
   } finally {
     lock.releaseLock();
@@ -129,6 +134,9 @@ function notify_(lead) {
        'Project type: ' + lead.projectType, 'Project description: ' + (lead.description || '-'),
        'Additional notes: ' + (lead.notes || '-'), 'Music link: ' + (lead.link || '-')]
     : ['Name: ' + lead.name, 'Email: ' + lead.email, 'Message: ' + lead.message];
+  var src = lead.source || [];
+  lines.push('', 'Found you via: ' + (src[0] || 'didn\'t say') + '  (site saw: ' + (src[1] || 'Direct / unknown') +
+             (src[2] ? ', ' + src[2] : '') + ')');
   lines.push('', 'All leads: ' + SpreadsheetApp.getActiveSpreadsheet().getUrl());
   GmailApp.sendEmail(me, 'New ' + form.label + ': ' + (lead.artist || lead.name || lead.email),
     lines.join('\n'), { name: 'MixedByJack site', replyTo: lead.email });
@@ -357,7 +365,9 @@ function testSubmission() {
   doPost({ parameter: {
     form_type: 'intake', first_name: 'Test', artist_name: 'Test Band', email: me,
     project_type: 'Single', project_description: 'Test submission from the script editor. Delete this row.',
-    additional_notes: '', file_link: ''
+    additional_notes: '', file_link: '',
+    heard_about: 'Instagram', lead_source: 'Google Ads', lead_campaign: 'test-campaign · country mixing engineer',
+    landing_page: '/country-mixing'
   }});
 }
 
