@@ -11,10 +11,14 @@ var FORM_ENDPOINT = "";
    Paste the web app URL here once, and every submission is added to your
    Google Sheet and the sender gets a confirmation email from your business address. */
 var SHEETS_ENDPOINT = "https://script.google.com/macros/s/AKfycbyyUq5bsQBIeilbNO9lFakhoYgDSTUCPJiuHzKZwpzLr3lyq1dp6e_J34aBnX0jG1WDMw/exec";
+function sendEvent(name, params){ try { if (window.mbjTrack) window.mbjTrack(name, params); } catch (e) {} }
 function postToSheets(type, formData){
   var body = new URLSearchParams();
   formData.forEach(function(v, k){ if (typeof v === "string") body.append(k, v); });
   body.append("form_type", type);
+  // where this visitor came from (see analytics.js) -> extra columns in the leads sheet
+  var src = window.mbjSource ? window.mbjSource() : {};
+  Object.keys(src).forEach(function(k){ body.append(k, src[k]); });
   // no-cors: Apps Script can't answer cross-site reads, so success = request left the browser
   return fetch(SHEETS_ENDPOINT, { method:"POST", mode:"no-cors", body:body });
 }
@@ -212,9 +216,11 @@ var ALL_PLAYERS = [];
     audioBefore.addEventListener("error", onError);
     audioAfter.addEventListener("error", onError);
 
+    var trackedPlay = false, trackedCompare = false;
     function setActive(version){
       if (version === state.active) return;
       state.active = version;
+      if (!trackedCompare){ trackedCompare = true; sendEvent("ab_compare", { track: track.title }); }
       if (version === "after") card.classList.remove("untried");
       card.setAttribute("data-active", version);
       toggle.setAttribute("data-state", version);
@@ -237,6 +243,7 @@ var ALL_PLAYERS = [];
       audioAfter.currentTime = audioBefore.currentTime;
       Promise.all([audioBefore.play(), audioAfter.play()]).then(function(){
         state.playing = true; card.classList.add("playing");
+        if (!trackedPlay){ trackedPlay = true; sendEvent("audio_play", { player: "before_after", track: track.title }); }
         listEl.classList.add("engaged");
         var d = bothDur(); if (d > 0) state.duration = d;
       }).catch(function(){});
@@ -351,11 +358,16 @@ var ALL_PLAYERS = [];
     audio.addEventListener("loadedmetadata", function(){ timeEl.textContent = fmt(audio.duration); });
     audio.addEventListener("error", function(){ row.classList.add("error"); timeEl.textContent = "unavailable"; });
 
+    var trackedPlay = false;
+    function started(){
+      playing = true; row.classList.add("playing");
+      if (!trackedPlay){ trackedPlay = true; sendEvent("audio_play", { player: "board_mix", track: track.title }); }
+    }
     function play(){
       ALL_PLAYERS.forEach(function(p){ if (p !== api) p.pause(); });
       var pr = audio.play();
-      if (pr && pr.then) pr.then(function(){ playing = true; row.classList.add("playing"); }).catch(function(){});
-      else { playing = true; row.classList.add("playing"); }
+      if (pr && pr.then) pr.then(started).catch(function(){});
+      else started();
     }
     function pause(){ audio.pause(); playing = false; row.classList.remove("playing"); }
     row.querySelector(".play-btn").addEventListener("click", function(){ playing ? pause() : play(); });
@@ -414,6 +426,7 @@ var ALL_PLAYERS = [];
     modal.classList.remove("sent");
     modal.classList.add("open");
     document.body.classList.add("modal-open");
+    sendEvent("form_open", { form_type: "intake" });
     setTimeout(function(){ document.getElementById("f-first").focus(); }, 60);
   }
   function closeModal(){
@@ -496,6 +509,7 @@ var ALL_PLAYERS = [];
     function done(){
       document.getElementById("success-name").textContent = first ? ", " + first : "";
       modal.classList.add("sent");
+      sendEvent("lead", { form_type: "intake", project_type: (data.get("project_type") || ""), lead_source: window.mbjSource ? window.mbjSource().lead_source : "" });
       submitBtn.disabled = false;
       submitBtn.innerHTML = 'Send My Project <span class="arrow">→</span>';
     }
@@ -533,6 +547,7 @@ var ALL_PLAYERS = [];
     modal.classList.remove("sent");
     modal.classList.add("open");
     document.body.classList.add("modal-open");
+    sendEvent("form_open", { form_type: "contact" });
     setTimeout(function(){ document.getElementById("c-name").focus(); }, 60);
   }
   function close(){
@@ -568,6 +583,7 @@ var ALL_PLAYERS = [];
     function done(){
       document.getElementById("c-success-name").textContent = name ? ", " + name.split(" ")[0] : "";
       modal.classList.add("sent");
+      sendEvent("lead", { form_type: "contact", lead_source: window.mbjSource ? window.mbjSource().lead_source : "" });
       btn.disabled = false; btn.innerHTML = 'Send Message <span class="arrow">→</span>';
     }
     if (!SHEETS_ENDPOINT){

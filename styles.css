@@ -553,6 +553,14 @@ body.modal-open{overflow:hidden}
 }
 .textarea{min-height:104px;resize:vertical;line-height:1.55}
 .input::placeholder,.textarea::placeholder{color:rgba(255,255,255,.35)}
+.select{
+  --chev:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23c084fc' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:44px;
+  background-image:var(--chev);background-repeat:no-repeat;background-position:right 16px center;background-size:12px 8px;
+}
+.select:focus{background-image:var(--chev);background-repeat:no-repeat;background-position:right 16px center;background-size:12px 8px}
+.select:has(option[value=""]:checked){color:rgba(255,255,255,.45)}
+.select option{color:#1f1a2b;background:#fff}
 .input:focus,.textarea:focus{outline:none;border-color:var(--purple-bright);background:rgba(0,0,0,.55);box-shadow:0 0 0 4px rgba(168,85,247,.2)}
 .field.invalid .input{border-color:#ff8a8a;box-shadow:0 0 0 4px rgba(255,138,138,.15)}
 .field .err{display:none;color:#ff9b9b;font-size:12.5px;margin-top:6px}
