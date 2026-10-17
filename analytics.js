@@ -55,6 +55,8 @@ var ANALYTICS = {
       var g = window.gtag, f = window.fbq, intake = params.form_type === "intake";
       if (name === "lead"){
         if (g && A.GA4_ID) g("event", "generate_lead", params);
+        // Mix/master inquiries only: imported into Google Ads as the "Mix/Master Inquiry" conversion
+        if (g && A.GA4_ID && intake) g("event", "mix_inquiry", params);
         // Paid platforms only count project inquiries, so ads optimize for mix/master clients
         if (g && intake && A.GOOGLE_ADS_ID && A.GOOGLE_ADS_LEAD_LABEL)
           g("event", "conversion", { send_to: A.GOOGLE_ADS_ID + "/" + A.GOOGLE_ADS_LEAD_LABEL });
