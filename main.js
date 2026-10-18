@@ -113,6 +113,82 @@ var ALL_PLAYERS = [];
   els.forEach(function(e){ io.observe(e); });
 })();
 
+/* Items that pop in one by one as they scroll into view (Live Sound section) */
+(function(){
+  var els = document.querySelectorAll(".pop");
+  if (!els.length) return;
+  if (!("IntersectionObserver" in window)) { els.forEach(function(e){ e.classList.add("in"); }); return; }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if (en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target); }
+    });
+  }, { rootMargin:"0px 0px -14% 0px", threshold:0.2 });
+  els.forEach(function(e){ io.observe(e); });
+})();
+
+/* =========================================================
+   About: animated sound-wave dividers (drawn, no video file)
+   ========================================================= */
+(function(){
+  var canvases = document.querySelectorAll(".wave canvas");
+  if (!canvases.length) return;
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var LAYERS = [
+    { amp:1,   phase:0,   rgb:"192,132,252", alpha:.55, width:1.6 },
+    { amp:.72, phase:2.1, rgb:"139,92,246",  alpha:.34, width:1.2 },
+    { amp:.48, phase:4.3, rgb:"217,70,239",  alpha:.2,  width:1 }
+  ];
+  canvases.forEach(function(cv, idx){
+    var ctx = cv.getContext("2d");
+    if (!ctx) return;
+    var w = 0, h = 0, visible = false, raf = 0, seed = idx * 7.31, start = performance.now();
+    function size(){
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = cv.clientWidth; h = cv.clientHeight;
+      cv.width = Math.max(1, Math.round(w * dpr)); cv.height = Math.max(1, Math.round(h * dpr));
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    function frame(now){
+      raf = 0;
+      var t = (now - start) / 1000;
+      ctx.clearRect(0, 0, w, h);
+      var vertical = h >= w, len = vertical ? h : w, cross = vertical ? w : h, mid = cross / 2;
+      var steps = Math.max(80, Math.round(len / 3));
+      LAYERS.forEach(function(L){
+        ctx.beginPath();
+        for (var i = 0; i <= steps; i++){
+          var u = i / steps, pos = u * len;
+          var edge = Math.sin(Math.PI * u); edge *= edge;                       // fade out at both ends
+          var swell = .35 + .65 * Math.pow(.5 + .5 * Math.sin(u * 4.6 - t * .9 + seed + L.phase * .25), 2); // loudness travelling along the line
+          var v = Math.sin(u * 34 + t * 2.4 + L.phase + seed) * .55
+                + Math.sin(u * 83 - t * 3.6 + L.phase * 1.7) * .28
+                + Math.sin(u * 11 + t * 1.1 + seed) * .17;
+          var off = v * swell * edge * cross * .36 * L.amp;
+          var x = vertical ? mid + off : pos, y = vertical ? pos : mid + off;
+          if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y);
+        }
+        var g = vertical ? ctx.createLinearGradient(0, 0, 0, h) : ctx.createLinearGradient(0, 0, w, 0);
+        g.addColorStop(0, "rgba(" + L.rgb + ",0)");
+        g.addColorStop(.22, "rgba(" + L.rgb + "," + L.alpha + ")");
+        g.addColorStop(.78, "rgba(" + L.rgb + "," + L.alpha + ")");
+        g.addColorStop(1, "rgba(" + L.rgb + ",0)");
+        ctx.strokeStyle = g; ctx.lineWidth = L.width; ctx.lineJoin = "round"; ctx.lineCap = "round";
+        ctx.stroke();
+      });
+      if (visible && !reduce) raf = requestAnimationFrame(frame);
+    }
+    function kick(){ if (!raf) raf = requestAnimationFrame(frame); }
+    size();
+    window.addEventListener("resize", function(){ size(); kick(); });
+    if ("IntersectionObserver" in window){
+      new IntersectionObserver(function(entries){
+        entries.forEach(function(en){ visible = en.isIntersecting; if (visible) kick(); });
+      }).observe(cv);
+    } else { visible = true; }
+    kick();
+  });
+})();
+
 /* =========================================================
    Before / After players
    ========================================================= */
