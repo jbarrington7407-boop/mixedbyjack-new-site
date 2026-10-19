@@ -27,8 +27,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=202610161812">
-<script src="/analytics.js?v=202610161812"></script>
+<link rel="stylesheet" href="styles.css?v=202610181835">
+<script src="/analytics.js?v=202610181835"></script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -213,6 +213,7 @@
           <img src="assets/about-young.jpg" alt="Jack as a kid behind his first drum kit" loading="lazy">
           <img src="assets/about-stage.jpg" alt="Jack playing drums on stage" loading="lazy">
         </div>
+        <div class="wave" aria-hidden="true"><canvas></canvas></div>
         <div class="about-text">
           <p class="hello">My name is <span>Jack</span>.</p>
           <p>Music has been a huge part of who I am for as long as I can remember. When I'm not mixing, I'm on stage behind a drum set. I was introduced to the instrument at a young age and loved it so much I quite literally built my first set out of pots, pans, a frisbee golf net and whatever else I could find at home. This passion for playing music quickly turned into a deep curiosity for understanding how music is made, from initial recording to final release. I ended up running the audio engineering club at my high school and later leading the unofficial AES chapter at the University of Nevada, Reno.</p>
@@ -223,6 +224,7 @@
         <div class="about-photo">
           <img src="assets/about-jack-bw.jpg" alt="Jack Barrington mixing on a Midas console" loading="lazy">
         </div>
+        <div class="wave" aria-hidden="true"><canvas></canvas></div>
         <div class="about-text">
           <p>Mixing live shows most nights of the week has had a huge impact on how I mix in the studio. What's unique about my work is that I approach a project with the intention of preserving the MOMENT the music was recorded and accentuating the FEELING that inspired the songwriting in the first place. Just as every show has a specific and unique energy to it, every studio session does as well. My mission is to not only accurately convey that energy to listeners but to truly immerse them in the moment that your art was created.</p>
           <p>Let me make sure your releases sound the exact same as how you first heard them in your head. Take a look at my portfolio for recent work samples or get in touch with me directly right here.</p>
@@ -238,57 +240,38 @@
 
 <!-- ================= LIVE SOUND ================= -->
 <section class="section live" id="live">
-  <div class="bg-media" aria-hidden="true">
-    <video autoplay muted loop playsinline preload="metadata" poster="assets/live-bg-poster.jpg">
-      <source src="assets/live-bg.mp4" type="video/mp4">
-    </video>
+  <div class="live-bg" aria-hidden="true">
+    <div class="live-bg-sticky">
+      <video autoplay muted loop playsinline preload="metadata" poster="assets/live-bg-poster.jpg">
+        <source src="assets/live-bg.mp4" type="video/mp4">
+      </video>
+      <div class="live-bg-shade"></div>
+    </div>
   </div>
-  <div class="bg-shade" aria-hidden="true"></div>
   <div class="wrap">
-    <header class="section-head reveal">
-      <h2 class="h2">Live Event <span class="accent">Production</span></h2>
-      <p class="lede"><strong>Available for Tour</strong></p>
+    <header class="live-head">
+      <h2 class="h2 pop">Live Event <span class="accent">Production</span></h2>
+      <p class="live-tour pop" style="--d:.1s">Available for Tour</p>
+      <p class="live-lead pop" style="--d:.15s">Front of house, monitors, and system tech for concerts, multi-stage festivals, touring acts, and corporate events.</p>
+      <p class="live-sub pop" style="--d:.2s">Currently the primary FOH for a national country act, with 5 years of prior experience freelancing with local and international production companies on shows up to 5,000 capacity.</p>
     </header>
-    <div class="live-split">
-      <div class="live-copy from-left">
-        <p class="live-lead">Front of house, monitors, and system tech for concerts, multi-stage festivals, touring acts, and corporate events.</p>
-        <p class="live-sub">Currently the primary FOH for a national country act, with 5 years of prior experience freelancing with local and international production companies on shows up to 5,000 capacity.</p>
-        <div class="live-lists">
-          <div>
-            <h3>Console Experience</h3>
-            <ul class="live-list">
-              <li class="top">Midas HD96</li>
-              <li class="top">Midas Pro Series</li>
-              <li class="top">Midas M32</li>
-              <li class="top">Behringer Wing</li>
-              <li>DiGiCo Quantum</li>
-              <li>Yamaha CL5</li>
-              <li>Allen &amp; Heath dLive</li>
-            </ul>
-          </div>
-          <div>
-            <h3>Certifications</h3>
-            <ul class="live-list">
-              <li>Shure Wireless Workbench 7</li>
-              <li>Dante Level 1</li>
-              <li>Dante Level 2</li>
-              <li>Allen &amp; Heath dLive</li>
-            </ul>
-          </div>
-        </div>
-        <a href="#" class="btn" data-open-contact>Book Live Sound <span class="arrow">→</span></a>
-      </div>
-      <div class="live-collage from-right">
-        <img class="c1" src="assets/live-1.jpg" alt="Jack mixing on a Midas Pro Series console" loading="lazy">
-        <img class="c2" src="assets/live-2.jpg" alt="FOH console at a live show" loading="lazy">
-        <img class="c3" src="assets/live-3.jpg" alt="DiGiCo console facing the stage" loading="lazy">
-      </div>
+
+    <div class="live-shots">
+      <figure class="live-shot hd96 pop"><img src="assets/live-hd96.jpg" alt="Midas HD96 at front of house" width="800" height="835" loading="lazy"></figure>
+      <figure class="live-shot dlive pop" style="--d:.2s"><img src="assets/live-dlive.jpg" alt="Allen &amp; Heath dLive at front of house" width="800" height="666" loading="lazy"></figure>
+    </div>
+
+    <div class="live-cta pop">
+      <a href="#" class="btn" data-open-contact>Book Live Sound <span class="arrow">→</span></a>
+      <a href="#board-mixes" class="btn btn-ghost">Hear FOH Board Mixes</a>
     </div>
   </div>
 </section>
 
 <!-- ================= TESTIMONIALS ================= -->
 <section class="section testimonials" id="testimonials">
+  <div class="bg-media" aria-hidden="true"><img src="assets/live-1.jpg" alt="" loading="lazy"></div>
+  <div class="bg-shade" aria-hidden="true"></div>
   <div class="wrap">
     <header class="section-head reveal">
       <h2 class="h2">Trusted by Artists&nbsp;&amp; <span class="accent">Production Teams</span></h2>
@@ -363,7 +346,7 @@
       </div>
     </div>
 
-    <div class="board-mixes">
+    <div class="board-mixes" id="board-mixes">
       <header class="board-head reveal">
         <h3 class="clients-title">Recent Front Of House Board Mixes</h3>
         <p>Two track recordings pulled straight from the console.</p>
@@ -572,6 +555,6 @@
   </div>
 </div>
 
-<script src="main.js?v=202610161812"></script>
+<script src="main.js?v=202610181835"></script>
 </body>
 </html>
