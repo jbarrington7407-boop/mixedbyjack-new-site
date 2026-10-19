@@ -704,24 +704,117 @@ document.querySelectorAll('a[href="#clients"], a[href="#board-mixes"]').forEach(
 
 /* =========================================================
    Featured video (genre pages): big play button, then native controls.
-   Optional Before/After: a separate "before" audio file plays in sync with
-   the video, and the toggle switches which one you hear.
+   Optional Before/After: the raw ("before") track plays in sync with the
+   video and the toggle switches which one you hear.
+   - Desktop: a second <audio> element, flipped with mute.
+   - iPhone/iPad: Safari won't play two media elements with sound at once,
+     so the raw track is decoded and played through Web Audio instead.
    ========================================================= */
 document.querySelectorAll(".feature-video").forEach(function(box){
   var v = box.querySelector("video"), btn = box.querySelector(".fv-play");
   if (!v || !btn) return;
-  var before = box.querySelector("audio.fv-before");
+  var beforeEl = box.querySelector("audio.fv-before");
   var bar = box.parentNode.querySelector(".fv-ab");
   var toggle = bar && bar.querySelector(".ab-toggle");
   var state = "after", tracked = false, trackedCompare = false;
   var api = { pause: function(){ v.pause(); } };
   ALL_PLAYERS.push(api);   // other players pause this video when they start
 
-  /* Both keep playing in sync; flipping just mutes one and unmutes the other.
-     (Plain muting works everywhere, including iPhones on silent mode.) */
+  var IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+            (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  var AC = window.AudioContext || window.webkitAudioContext;
+
+  /* ---------- Backend A: <audio> element (desktop, Android) ---------- */
+  function ElementTrack(el){
+    var self = this;
+    el.muted = true;
+    this.unlock = function(){
+      el.preload = "auto";
+      if (el.paused){ try { el.currentTime = v.currentTime; } catch (e) {} var p = el.play(); if (p && p.catch) p.catch(function(){}); }
+    };
+    this.start = function(){
+      if (v.paused) return;
+      el.playbackRate = v.playbackRate;
+      try { el.currentTime = v.currentTime; } catch (e) {}
+      var p = el.play(); if (p && p.catch) p.catch(function(){});
+    };
+    this.stop = function(){ el.pause(); };
+    this.seek = function(){ if (el.readyState >= 1){ try { el.currentTime = v.currentTime; } catch (e) {} } };
+    this.rate = function(){ el.playbackRate = v.playbackRate; };
+    this.audible = function(on){ el.muted = !on; };
+    this.drift = function(){
+      if (v.paused || el.paused || el.readyState < 1) return;
+      if (Math.abs(el.currentTime - v.currentTime) > 0.08) self.seek();
+    };
+    this.volume = function(){ el.volume = v.volume; };
+    el.addEventListener("error", function(){ self.onfail && self.onfail(); });
+  }
+
+  /* ---------- Backend B: Web Audio (iPhone / iPad) ---------- */
+  function WebAudioTrack(url){
+    var self = this, ctx = null, gain = null, buf = null, src = null;
+    var loading = false, t0 = 0, pos0 = 0, rate = 1, on = false;
+    function load(){
+      if (buf || loading || !ctx) return;
+      loading = true;
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", url, true); xhr.responseType = "arraybuffer";
+      xhr.onload = function(){
+        if (xhr.status >= 400){ loading = false; self.onfail && self.onfail(); return; }
+        ctx.decodeAudioData(xhr.response, function(b){
+          buf = b; loading = false; box.classList.remove("before-loading");
+          if (!v.paused) self.start();
+        }, function(){ loading = false; self.onfail && self.onfail(); });
+      };
+      xhr.onerror = function(){ loading = false; self.onfail && self.onfail(); };
+      xhr.send();
+    }
+    this.unlock = function(){
+      if (!AC) return;
+      if (!ctx){
+        try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch (e) {}
+        ctx = new AC();
+        gain = ctx.createGain(); gain.gain.value = on ? 1 : 0; gain.connect(ctx.destination);
+        var s = ctx.createBufferSource(); s.buffer = ctx.createBuffer(1, 1, 22050); s.connect(ctx.destination); s.start(0);
+      }
+      if (ctx.state === "suspended") ctx.resume();
+      load();
+    };
+    function stopSrc(){ if (src){ try { src.stop(0); } catch (e) {} try { src.disconnect(); } catch (e) {} src = null; } }
+    this.start = function(){
+      stopSrc();
+      if (!buf || !ctx || v.paused) return;
+      if (ctx.state === "suspended") ctx.resume();
+      var off = Math.max(0, Math.min(v.currentTime, buf.duration - 0.05));
+      src = ctx.createBufferSource(); src.buffer = buf; src.playbackRate.value = rate;
+      src.connect(gain); src.start(0, off);
+      t0 = ctx.currentTime; pos0 = off;
+    };
+    this.stop = stopSrc;
+    this.seek = function(){ if (!v.paused) self.start(); };
+    this.rate = function(){ rate = v.playbackRate || 1; if (!v.paused) self.start(); };
+    this.audible = function(want){
+      on = want;
+      if (want && !buf){ box.classList.add("before-loading"); self.unlock(); }
+      if (gain) gain.gain.setTargetAtTime(want ? (v.volume || 1) : 0, ctx.currentTime, 0.012);
+    };
+    this.drift = function(){
+      if (!src || v.paused) return;
+      var p = pos0 + (ctx.currentTime - t0) * rate;
+      if (Math.abs(p - v.currentTime) > 0.06) self.start();
+    };
+    this.volume = function(){ if (gain && on) gain.gain.value = v.volume; };
+  }
+
+  var track = null;
+  if (beforeEl){
+    track = (IOS && AC) ? new WebAudioTrack(beforeEl.getAttribute("src")) : new ElementTrack(beforeEl);
+    track.onfail = function(){ if (bar) bar.style.display = "none"; state = "after"; applyState(); track = null; };
+  }
+
   function applyState(){
     var b = state === "before";
-    if (before){ v.muted = b; before.muted = !b; }
+    if (track){ v.muted = b; track.audible(b); }
     box.classList.toggle("before-on", b);
     if (toggle){
       toggle.setAttribute("data-state", state);
@@ -731,63 +824,41 @@ document.querySelectorAll(".feature-video").forEach(function(box){
       });
     }
   }
-  function sync(force){
-    if (!before || before.readyState < 1) return;
-    if (force || Math.abs(before.currentTime - v.currentTime) > 0.08){
-      try { before.currentTime = v.currentTime; } catch (e) {}
-    }
-  }
-  function startBefore(){
-    if (!before || v.paused) return;
-    before.playbackRate = v.playbackRate;
-    sync(true);
-    var pr = before.play(); if (pr && pr.catch) pr.catch(function(){});
-  }
   function setState(next){
     if (next === state) return;
     state = next;
-    if (state === "before") sync(true);
-    if (!v.paused) kickBefore();
+    if (track){ track.unlock(); if (!v.paused) track.start(); }
     applyState();
     box.classList.remove("untried");
     if (!trackedCompare){ trackedCompare = true; sendEvent("ab_compare", { track: box.getAttribute("data-title") || "" }); }
   }
 
-  // Phones only let audio start from a tap, so the raw track is started (silently)
-  // in the same tap that starts the video, and again from the Before/After tap.
-  function kickBefore(){
-    if (!before || !before.paused) return;
-    before.preload = "auto";
-    try { before.currentTime = v.currentTime; } catch (e) {}
-    var pb = before.play(); if (pb && pb.catch) pb.catch(function(){});
-  }
   btn.addEventListener("click", function(){
     v.setAttribute("controls", "");
     var pr = v.play(); if (pr && pr.catch) pr.catch(function(){});
-    kickBefore();
+    if (track) track.unlock();      // must happen inside the tap on phones
   });
   v.addEventListener("play", function(){
     box.classList.add("started");
     ALL_PLAYERS.forEach(function(p){ if (p !== api) p.pause(); });
-    if (before) startBefore();
+    if (track) track.start();
     if (!tracked){ tracked = true; sendEvent("video_play", { video: box.getAttribute("data-title") || "" }); }
   });
 
-  if (!before) return;
-  v.addEventListener("pause", function(){ before.pause(); });
-  v.addEventListener("ended", function(){ before.pause(); });
-  v.addEventListener("waiting", function(){ before.pause(); });
-  v.addEventListener("playing", startBefore);
-  v.addEventListener("seeking", function(){ sync(true); });
-  v.addEventListener("seeked", function(){ sync(true); });
-  v.addEventListener("ratechange", function(){ before.playbackRate = v.playbackRate; });
+  if (!track) return;
+  v.addEventListener("playing", function(){ track && track.start(); });
+  v.addEventListener("pause", function(){ track && track.stop(); });
+  v.addEventListener("ended", function(){ track && track.stop(); });
+  v.addEventListener("waiting", function(){ track && track.stop(); });
+  v.addEventListener("seeked", function(){ track && track.seek(); });
+  v.addEventListener("ratechange", function(){ track && track.rate(); });
   // Unmuting the video with its own controls while on Before means "let me hear the mix"
   v.addEventListener("volumechange", function(){
-    before.volume = v.volume;
+    if (!track) return;
+    track.volume();
     if (state === "before" && !v.muted){ state = "after"; applyState(); }
   });
-  setInterval(function(){ if (!v.paused && !before.paused) sync(false); }, 400);
-  before.addEventListener("error", function(){ if (bar) bar.style.display = "none"; state = "after"; applyState(); });
+  setInterval(function(){ track && track.drift(); }, 400);
 
   if (toggle){
     box.classList.add("untried");
