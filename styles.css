@@ -687,6 +687,7 @@ body.modal-open{overflow:hidden}
 .split h2{font-weight:700;font-size:clamp(28px,3.2vw,42px);letter-spacing:-0.02em;line-height:1.1}
 .prose p{font-size:clamp(16px,1.25vw,18px);line-height:1.8;color:var(--ink-soft);margin-bottom:18px}
 .prose p:last-child{margin-bottom:0}
+.prose .intro-cta{margin-top:28px}
 .prose strong{color:#fff;font-weight:600}
 .steps{list-style:none;margin:0;padding:0;counter-reset:step}
 .steps li{counter-increment:step;position:relative;padding:0 0 28px 64px;border-left:1px solid var(--line);margin-left:18px}

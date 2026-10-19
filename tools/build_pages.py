@@ -125,9 +125,10 @@ PAGES = [
             "src": "assets/country/met-your-match-live.mp4",
             "poster": "assets/country/met-your-match-poster.jpg",
             "before": "assets/country/met-your-match-before.m4a",
-            "before_v": "2",
+            "before_v": "3",
+            "src_v": "2",
         },
-        "board": {"tracks": ["Time Loving You", "Redneck Man"], "h": "Straight from the board",
+        "board": {"tracks": ["Time Loving You", "Redneck Man"], "h": "Straight From The Board",
                   "lede": "Two-track recordings pulled off the front-of-house console at Jakota Wass shows."},
         # background loops: section -> (video, poster)
         "loops": {
@@ -143,8 +144,9 @@ PAGES = [
         "intro_h": "Country is most of what I mix",
         "intro": [
             "I run front of house for a national country act, so most weeks I'm mixing for a live crowd. I've also mixed front of house for <strong>Lonestar</strong> and worked shows with <strong>Josh Turner</strong>, <strong>Michael Ray</strong>, and <strong>Ryan Bingham</strong>, to name a few.",
-            "That carries over to the studio in a unique way. Every show has its own energy, and so does every recording session. When I mix, I'm holding on to the moment your song was recorded and the feeling that made you write it, so listeners end up right there in the room with you.",
+            "That carries over to the studio in a unique way. Every show has its own energy, and so does every recording session. When I mix, my goal is to preserve the FEELING and EMOTION that was in the room when the song was written. If you want your listeners to feel like they're standing in that room with you, I'd love to hear what you're working on.",
         ],
+        "intro_cta": "Send Me Your Song",
         "work": [],
         "credits": ["jakota"],
         "faq": COMMON_FAQ,
@@ -300,7 +302,7 @@ def build():
             feature_html = sec("feature", f"""  <div class="page-body">
     <h2 class="feature-title reveal">{esc(f['heading'])}</h2>
     <div class="feature-video reveal" data-title="{esc(f['artist'] + ' - ' + f['title'])}">
-      <video preload="none" playsinline poster="/{f['poster']}"><source src="/{f['src']}" type="video/mp4"></video>{before_el}{badge}
+      <video preload="none" playsinline poster="/{f['poster']}"><source src="/{f['src']}{('?v=' + f['src_v']) if f.get('src_v') else ''}" type="video/mp4"></video>{before_el}{badge}
       <button class="fv-play" type="button" aria-label="Play {esc(f['title'])} by {esc(f['artist'])}">
         <span class="fv-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg></span>
       </button>
@@ -310,9 +312,11 @@ def build():
     </div>
   </div>""", " feature", "featured")
 
+        intro_cta = (f'<p class="intro-cta"><a href="#" class="btn" data-open-intake>{esc(p["intro_cta"])} <span class="arrow">→</span></a></p>'
+                     if p.get("intro_cta") else "")
         intro_html = sec("intro", f"""  <div class="page-body split">
     <h2 class="reveal">{esc(p['intro_h'])}</h2>
-    <div class="prose reveal">{''.join(f'<p>{x}</p>' for x in p['intro'])}</div>
+    <div class="prose reveal">{''.join(f'<p>{x}</p>' for x in p['intro'])}{intro_cta}</div>
   </div>""")
 
         ab_html = ""
