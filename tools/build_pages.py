@@ -253,7 +253,9 @@ def build():
         prices_html = "".join(
             f'<div class="price-row"><div><h3>{esc(n)}</h3><p>{esc(d)}</p></div>{money(v)}</div>' for n, d, v in price_rows)
 
-        if p.get("hero_video"):
+        # media that hasn't been added to assets/ yet is skipped, so the page never shows a broken player
+        has = lambda rel: (ROOT / rel).exists()
+        if p.get("hero_video") and has(p["hero_video"][0]):
             vsrc, vposter = p["hero_video"]
             hero_media = (f'<div class="bg-media" aria-hidden="true"><video autoplay muted loop playsinline preload="auto" '
                           f'poster="/{vposter}"><source src="/{vsrc}" type="video/mp4"></video></div>')
@@ -261,7 +263,7 @@ def build():
             hero_media = f'<div class="bg-media" aria-hidden="true"><img src="/{p["bg"]}" alt=""></div>'
 
         feature_html = ""
-        if p.get("feature"):
+        if p.get("feature") and has(p["feature"]["src"]):
             f = p["feature"]
             feature_html = f"""<section class="section feature" id="featured">
   <div class="page-body">
@@ -336,7 +338,7 @@ def build():
 
 <main id="top">
 
-<section class="page-hero{' tall' if p.get('hero_video') else ''}" aria-label="Intro">
+<section class="page-hero{' tall' if p.get('hero_video') and has(p['hero_video'][0]) else ''}" aria-label="Intro">
   {hero_media}
   <div class="bg-shade" aria-hidden="true"></div>
   <div class="page-hero-inner">
