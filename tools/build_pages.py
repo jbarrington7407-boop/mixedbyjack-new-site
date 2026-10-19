@@ -142,7 +142,7 @@ PAGES = [
         "intro_h": "Country is most of what I mix",
         "intro": [
             "I run front of house for a national country act, so most weeks I'm mixing for a live crowd. I've also mixed front of house for <strong>Lonestar</strong> and worked shows with <strong>Josh Turner</strong>, <strong>Michael Ray</strong>, and <strong>Ryan Bingham</strong>, to name a few.",
-            "That carries over to the studio. I start with the vocal and the song, then build the band around it so it sounds like they're in the room with you. Send me your tracks and we'll keep going until it sounds right to you.",
+            "That carries over to the studio in a unique way. Every show has its own energy, and so does every recording session. When I mix, I'm holding on to the moment your song was recorded and the feeling that made you write it, so listeners end up right there in the room with you.",
         ],
         "work": [],
         "credits": ["jakota"],
