@@ -682,12 +682,13 @@ var ALL_PLAYERS = [];
 
 /* In-page links: lazy images and reveals can shift the layout while the page
    scrolls, so re-aim once the first scroll settles. */
-document.querySelectorAll('a[href="#clients"]').forEach(function(a){
+document.querySelectorAll('a[href="#clients"], a[href="#board-mixes"]').forEach(function(a){
   a.addEventListener("click", function(e){
-    var t = document.getElementById("clients");
+    var id = a.getAttribute("href").slice(1);
+    var t = document.getElementById(id);
     if (!t) return;
     e.preventDefault();
-    history.replaceState(null, "", "#clients");
+    history.replaceState(null, "", "#" + id);
     t.scrollIntoView({ behavior:"smooth", block:"start" });
     setTimeout(function(){ t.scrollIntoView({ behavior:"smooth", block:"start" }); }, 900);
     setTimeout(function(){ t.scrollIntoView({ behavior:"auto", block:"start" }); }, 1800);
