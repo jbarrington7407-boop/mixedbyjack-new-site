@@ -747,15 +747,24 @@ document.querySelectorAll(".feature-video").forEach(function(box){
     if (next === state) return;
     state = next;
     if (state === "before") sync(true);
+    if (!v.paused) kickBefore();
     applyState();
     box.classList.remove("untried");
     if (!trackedCompare){ trackedCompare = true; sendEvent("ab_compare", { track: box.getAttribute("data-title") || "" }); }
   }
 
+  // Phones only let audio start from a tap, so the raw track is started (silently)
+  // in the same tap that starts the video, and again from the Before/After tap.
+  function kickBefore(){
+    if (!before || !before.paused) return;
+    before.preload = "auto";
+    try { before.currentTime = v.currentTime; } catch (e) {}
+    var pb = before.play(); if (pb && pb.catch) pb.catch(function(){});
+  }
   btn.addEventListener("click", function(){
-    if (before){ before.preload = "auto"; before.load(); }
     v.setAttribute("controls", "");
     var pr = v.play(); if (pr && pr.catch) pr.catch(function(){});
+    kickBefore();
   });
   v.addEventListener("play", function(){
     box.classList.add("started");
