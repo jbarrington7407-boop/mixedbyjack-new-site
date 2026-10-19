@@ -56,9 +56,9 @@ var TRACKS = [
 /* ---------- FOH board mixes (portfolio) ---------- */
 var BOARD_MIXES = [
   { title: "Time Loving You", artist: "Jakota Wass", src: "assets/audio/board/jakota-wass-time-loving-you.mp3?v=3" },
-  { title: "Don't Let Your Enemies Get You to Hate Your Friends", artist: "The Novelists", src: "assets/audio/board/the-novelists-dont-let-your-enemies.mp3?v=3" },
-  { title: "Don't Know Why (Norah Jones Cover)", artist: "Salty Sally", src: "assets/audio/board/salty-sally-dont-know-why.mp3?v=3" },
   { title: "The Music Never Stopped (The Grateful Dead Cover)", artist: "The Coffis Brothers", src: "assets/audio/board/coffis-brothers-the-music-never-stopped.mp3?v=3" },
+  { title: "Don't Let Your Enemies Get You to Hate Your Friends", artist: "The Novelists", src: "assets/audio/board/the-novelists-dont-let-your-enemies.mp3?v=3" },
+  { title: "Don't Know Why (Norah Jones Cover)", artist: "Salty Sally", src: "assets/audio/board/salty-sally-dont-know-why.mp3?v=4" },
   { title: "Redneck Man", artist: "Jakota Wass", src: "assets/audio/board/redneck-man.mp3?v=3" }
 ];
 
