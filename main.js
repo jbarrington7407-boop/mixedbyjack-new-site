@@ -31,6 +31,13 @@ var MAX_UPLOAD_MB = 100; // per-file size limit shown to visitors
 var CONTACT_ENDPOINT = "";
 var CONTACT_EMAIL = "jbarrington7407@gmail.com";
 
+/* A player list can show only some tracks: data-tracks="Title One|Title Two" */
+function pickTracks(list, el){
+  var want = (el.getAttribute("data-tracks") || "").split("|").filter(Boolean);
+  if (!want.length) return list;
+  return want.map(function(t){ return list.filter(function(x){ return x.title === t; })[0]; }).filter(Boolean);
+}
+
 /* ---------- Before / After tracks ---------- */
 var TRACKS = [
   {
@@ -369,7 +376,7 @@ var ALL_PLAYERS = [];
     return card;
   }
 
-  TRACKS.forEach(function(t, i){ listEl.appendChild(createPlayer(t, i)); });
+  pickTracks(TRACKS, listEl).forEach(function(t, i){ listEl.appendChild(createPlayer(t, i)); });
 
   // Players are added after the reveal observer ran, so reveal them here
   if ("IntersectionObserver" in window){
@@ -406,7 +413,7 @@ var ALL_PLAYERS = [];
     return m + ":" + (sec < 10 ? "0" : "") + sec;
   }
 
-  BOARD_MIXES.forEach(function(track, index){
+  pickTracks(BOARD_MIXES, listEl).forEach(function(track, index){
     var row = document.createElement("div");
     row.className = "board-row reveal";
     row.innerHTML =
@@ -692,5 +699,24 @@ document.querySelectorAll('a[href="#clients"], a[href="#board-mixes"]').forEach(
     t.scrollIntoView({ behavior:"smooth", block:"start" });
     setTimeout(function(){ t.scrollIntoView({ behavior:"smooth", block:"start" }); }, 900);
     setTimeout(function(){ t.scrollIntoView({ behavior:"auto", block:"start" }); }, 1800);
+  });
+});
+
+/* =========================================================
+   Featured video (genre pages): big play button, then native controls
+   ========================================================= */
+document.querySelectorAll(".feature-video").forEach(function(box){
+  var v = box.querySelector("video"), btn = box.querySelector(".fv-play");
+  if (!v || !btn) return;
+  var tracked = false, api = { pause: function(){ v.pause(); } };
+  ALL_PLAYERS.push(api);   // other players pause this video when they start
+  btn.addEventListener("click", function(){
+    v.setAttribute("controls", "");
+    var pr = v.play(); if (pr && pr.catch) pr.catch(function(){});
+  });
+  v.addEventListener("play", function(){
+    box.classList.add("started");
+    ALL_PLAYERS.forEach(function(p){ if (p !== api) p.pause(); });
+    if (!tracked){ tracked = true; sendEvent("video_play", { video: box.getAttribute("data-title") || "" }); }
   });
 });

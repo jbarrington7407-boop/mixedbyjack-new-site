@@ -117,6 +117,19 @@ PAGES = [
         "h1": "Country Mixing",
         "lede": "Clear, honest vocals and a band that feels like it's playing in the room with you. Mixed online by the front-of-house engineer for a national country act.",
         "bg": "assets/live-card.jpg",
+        "hero_video": ("assets/country/hero-guitar.mp4", "assets/country/hero-guitar.jpg"),
+        "feature": {
+            "title": "Met Your Match",
+            "artist": "Jakota Wass",
+            "label": "Official live video",
+            "note": "Live session mixed by Jack. Headphones recommended.",
+            "src": "assets/country/met-your-match-live.mp4",
+            "poster": "assets/country/met-your-match-poster.jpg",
+        },
+        "ab": {"tracks": ["Met Your Match"], "h": "Same song, raw to release",
+               "lede": "The rough tracks from Met Your Match next to the final mix. Hit play, then flip between Before and After."},
+        "board": {"tracks": ["Time Loving You", "Redneck Man"], "h": "Straight from the board",
+                  "lede": "Two-track recordings pulled off the front-of-house console at Jakota Wass shows."},
         "service": ("Country mixing", "Country music mixing"),
         "intro_h": "Country is what I mix every week",
         "intro": [
@@ -187,7 +200,8 @@ def build():
     links = [(p["slug"], p["crumb"]) for p in PAGES]
     footer_links = '<nav class="footer-links" aria-label="Services">' + "".join(
         f'<a href="/{s}">{esc(t)}</a>' for s, t in links) + "</nav>"
-    footer = footer.replace("  </div>\n</footer>", "    " + footer_links + "\n  </div>\n</footer>")
+    if 'class="footer-links"' not in footer:   # the homepage footer may already carry them
+        footer = footer.replace("  </div>\n</footer>", "    " + footer_links + "\n  </div>\n</footer>")
 
     for p in PAGES:
         url = f"{SITE}/{p['slug']}"
@@ -222,8 +236,8 @@ def build():
             for k in p["work"])
         credits = "".join(f"<li><span>{esc(STUDIO[k][0])}</span><span>{esc(STUDIO[k][1])}</span></li>" for k in p["credits"])
         work_right = f'<div class="embeds">{embeds}</div>' if embeds else (
-            '<div class="prose"><p>Want to hear more? Listen to the before and after comparisons and live board mixes on the homepage.</p>'
-            '<p><a class="btn btn-ghost" href="/#listen">Hear the Difference <span class="arrow">→</span></a></p></div>')
+            '<div class="prose"><p>Want to hear more? The homepage has more before and after comparisons, live board mixes, and the full client list.</p>'
+            '<p><a class="btn btn-ghost" href="/#portfolio">See the Portfolio <span class="arrow">→</span></a></p></div>')
         steps_html = "".join(f"<li><h3>{esc(t)}</h3><p>{esc(d)}</p></li>" for t, d in steps)
         faq_html = "".join(f"<details><summary>{esc(q)}</summary><p>{a}</p></details>" for q, a in p["faq"])
         others = "".join(f'<a href="/{s}">{esc(t)}</a>' for s, t in links if s != p["slug"])
@@ -238,6 +252,61 @@ def build():
                           ("Mastering only", "Per song, one finished WAV", PRICES["master"])]
         prices_html = "".join(
             f'<div class="price-row"><div><h3>{esc(n)}</h3><p>{esc(d)}</p></div>{money(v)}</div>' for n, d, v in price_rows)
+
+        if p.get("hero_video"):
+            vsrc, vposter = p["hero_video"]
+            hero_media = (f'<div class="bg-media" aria-hidden="true"><video autoplay muted loop playsinline preload="auto" '
+                          f'poster="/{vposter}"><source src="/{vsrc}" type="video/mp4"></video></div>')
+        else:
+            hero_media = f'<div class="bg-media" aria-hidden="true"><img src="/{p["bg"]}" alt=""></div>'
+
+        feature_html = ""
+        if p.get("feature"):
+            f = p["feature"]
+            feature_html = f"""<section class="section feature" id="featured">
+  <div class="page-body">
+    <header class="feature-head reveal">
+      <p class="eyebrow">{esc(f['label'])}</p>
+      <h2>{esc(f['title'])} <span>{esc(f['artist'])}</span></h2>
+    </header>
+    <div class="feature-video reveal" data-title="{esc(f['artist'] + ' - ' + f['title'])}">
+      <video preload="none" playsinline poster="/{f['poster']}"><source src="/{f['src']}" type="video/mp4"></video>
+      <button class="fv-play" type="button" aria-label="Play {esc(f['title'])} by {esc(f['artist'])}">
+        <span class="fv-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg></span>
+        <span class="fv-label">Watch the live session</span>
+      </button>
+    </div>
+    <p class="feature-note reveal">{esc(f['note'])}</p>
+  </div>
+</section>
+"""
+
+        ab_html = ""
+        if p.get("ab"):
+            a = p["ab"]
+            ab_html = f"""<section class="section genre-listen">
+  <div class="wrap">
+    <header class="section-head reveal">
+      <h2 class="h2">{esc(a['h'])}</h2>
+      <p class="lede">{esc(a['lede'])}</p>
+    </header>
+    <div class="players" id="players" data-tracks="{esc('|'.join(a['tracks']))}"></div>
+  </div>
+</section>
+"""
+        board_html = ""
+        if p.get("board"):
+            b = p["board"]
+            board_html = f"""<section class="section genre-board">
+  <div class="board-mixes" id="board-mixes">
+    <header class="board-head reveal">
+      <h3 class="clients-title">{esc(b['h'])}</h3>
+      <p>{esc(b["lede"])}</p>
+    </header>
+    <div class="board-list" id="board-players" data-tracks="{esc('|'.join(b['tracks']))}"></div>
+  </div>
+</section>
+"""
 
         page = f"""<!doctype html>
 <html lang="en">
@@ -267,8 +336,8 @@ def build():
 
 <main id="top">
 
-<section class="page-hero" aria-label="Intro">
-  <div class="bg-media" aria-hidden="true"><img src="/{p['bg']}" alt=""></div>
+<section class="page-hero{' tall' if p.get('hero_video') else ''}" aria-label="Intro">
+  {hero_media}
   <div class="bg-shade" aria-hidden="true"></div>
   <div class="page-hero-inner">
     <p class="crumbs"><a href="/">MixedByJack</a> &nbsp;/&nbsp; {esc(p['crumb'])}</p>
@@ -281,6 +350,7 @@ def build():
   </div>
 </section>
 
+{feature_html}
 <section class="section">
   <div class="page-body split">
     <h2 class="reveal">{esc(p['intro_h'])}</h2>
@@ -288,6 +358,7 @@ def build():
   </div>
 </section>
 
+{ab_html}{board_html}
 <section class="section" id="process">
   <div class="page-body split">
     <h2 class="reveal">How it works</h2>
