@@ -119,22 +119,30 @@ PAGES = [
         "bg": "assets/live-card.jpg",
         "hero_video": ("assets/country/hero-guitar.mp4", "assets/country/hero-guitar.jpg"),
         "feature": {
-            "title": "Met Your Match",
+            "heading": "Recent recording/mix I've done",
+            "title": "Met Your Match (Live)",
             "artist": "Jakota Wass",
-            "label": "Official live video",
-            "note": "Live session mixed by Jack. Headphones recommended.",
             "src": "assets/country/met-your-match-live.mp4",
             "poster": "assets/country/met-your-match-poster.jpg",
+            "before": "assets/country/met-your-match-before.m4a",
         },
-        "ab": {"tracks": ["Met Your Match"], "h": "Same song, raw to release",
-               "lede": "The rough tracks from Met Your Match next to the final mix. Hit play, then flip between Before and After."},
         "board": {"tracks": ["Time Loving You", "Redneck Man"], "h": "Straight from the board",
                   "lede": "Two-track recordings pulled off the front-of-house console at Jakota Wass shows."},
+        # background loops: section -> (video, poster)
+        "loops": {
+            "intro": ("assets/country/loop-vocal.mp4", "assets/country/loop-vocal.jpg"),
+            "board": ("assets/country/loop-crowd.mp4", "assets/country/loop-crowd.jpg"),
+            "process": ("assets/country/loop-rack.mp4", "assets/country/loop-rack.jpg"),
+            "cta": ("assets/cta-bg.mp4", "assets/cta-bg-poster.jpg"),
+            "faq": ("assets/country/loop-desk.mp4", "assets/country/loop-desk.jpg"),
+        },
+        "no_credits": True,
+        "faq_last": True,
         "service": ("Country mixing", "Country music mixing"),
-        "intro_h": "Country is what I mix every week",
+        "intro_h": "Country is most of what I mix",
         "intro": [
-            "I'm currently the primary front-of-house engineer for a national country act, and I've mixed front of house for <strong>Lonestar</strong> and worked shows for <strong>Josh Turner</strong>. Country lives and dies by the vocal and the story, and that's where every one of my mixes starts.",
-            "In the studio I've mixed country for <strong>Jakota Wass</strong>. Send me your raw multitracks and I'll build a mix that keeps the song front and center, with as many revisions as it takes.",
+            "I run front of house for <strong>Jakota Wass</strong>, so most weeks I'm mixing country for a live crowd. I've also mixed front of house for <strong>Lonestar</strong> and worked shows with <strong>Josh Turner</strong>.",
+            "That carries over to the studio. I start with the vocal and the song, then build the band around it so it sounds like they're in the room with you. Send me your tracks and we'll keep going until it sounds right to you.",
         ],
         "work": [],
         "credits": ["jakota"],
@@ -262,53 +270,105 @@ def build():
         else:
             hero_media = f'<div class="bg-media" aria-hidden="true"><img src="/{p["bg"]}" alt=""></div>'
 
+        loops = p.get("loops", {})
+
+        def sec(key, inner, cls="", sid=""):
+            """A page section, with a looping background video when one is set for it."""
+            bg = ""
+            if key in loops and has(loops[key][0]):
+                vsrc, vposter = loops[key]
+                cls += " has-loop"
+                bg = (f'\n  <div class="bg-media" aria-hidden="true"><video autoplay muted loop playsinline preload="metadata" '
+                      f'poster="/{vposter}"><source src="/{vsrc}" type="video/mp4"></video></div>'
+                      f'\n  <div class="bg-shade" aria-hidden="true"></div>')
+            idattr = f' id="{sid}"' if sid else ""
+            return f'<section class="section{cls}"{idattr}>{bg}\n{inner}\n</section>\n'
+
         feature_html = ""
         if p.get("feature") and has(p["feature"]["src"]):
             f = p["feature"]
-            feature_html = f"""<section class="section feature" id="featured">
-  <div class="page-body">
-    <header class="feature-head reveal">
-      <p class="eyebrow">{esc(f['label'])}</p>
-      <h2>{esc(f['title'])} <span>{esc(f['artist'])}</span></h2>
-    </header>
+            ab = f.get("before") and has(f["before"])
+            before_el = f'\n      <audio class="fv-before" preload="none" src="/{f["before"]}"></audio>' if ab else ""
+            toggle = ('\n      <div class="fv-ab"><span class="fv-ab-label">Raw tracks vs. final mix</span>'
+                      '<div class="ab-toggle" data-state="after"><div class="thumb"></div>'
+                      '<button type="button" data-version="before" aria-pressed="false">BEFORE</button>'
+                      '<button type="button" class="active" data-version="after" aria-pressed="true">AFTER</button></div></div>') if ab else ""
+            feature_html = sec("feature", f"""  <div class="page-body">
+    <h2 class="feature-title reveal">{esc(f['heading'])}</h2>
     <div class="feature-video reveal" data-title="{esc(f['artist'] + ' - ' + f['title'])}">
-      <video preload="none" playsinline poster="/{f['poster']}"><source src="/{f['src']}" type="video/mp4"></video>
+      <video preload="none" playsinline poster="/{f['poster']}"><source src="/{f['src']}" type="video/mp4"></video>{before_el}
       <button class="fv-play" type="button" aria-label="Play {esc(f['title'])} by {esc(f['artist'])}">
         <span class="fv-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg></span>
-        <span class="fv-label">Watch the live session</span>
       </button>
     </div>
-    <p class="feature-note reveal">{esc(f['note'])}</p>
-  </div>
-</section>
-"""
+    <div class="fv-bar reveal">
+      <p class="fv-credit"><strong>{esc(f['artist'])}</strong> &middot; {esc(f['title'])}</p>{toggle}
+    </div>
+  </div>""", " feature", "featured")
+
+        intro_html = sec("intro", f"""  <div class="page-body split">
+    <h2 class="reveal">{esc(p['intro_h'])}</h2>
+    <div class="prose reveal">{''.join(f'<p>{x}</p>' for x in p['intro'])}</div>
+  </div>""")
 
         ab_html = ""
         if p.get("ab"):
             a = p["ab"]
-            ab_html = f"""<section class="section genre-listen">
-  <div class="wrap">
+            ab_html = sec("ab", f"""  <div class="wrap">
     <header class="section-head reveal">
       <h2 class="h2">{esc(a['h'])}</h2>
       <p class="lede">{esc(a['lede'])}</p>
     </header>
     <div class="players" id="players" data-tracks="{esc('|'.join(a['tracks']))}"></div>
-  </div>
-</section>
-"""
+  </div>""", " genre-listen")
+
         board_html = ""
         if p.get("board"):
             b = p["board"]
-            board_html = f"""<section class="section genre-board">
-  <div class="board-mixes" id="board-mixes">
+            board_html = sec("board", f"""  <div class="board-mixes" id="board-mixes">
     <header class="board-head reveal">
       <h3 class="clients-title">{esc(b['h'])}</h3>
       <p>{esc(b["lede"])}</p>
     </header>
     <div class="board-list" id="board-players" data-tracks="{esc('|'.join(b['tracks']))}"></div>
-  </div>
-</section>
-"""
+  </div>""", " genre-board")
+
+        process_html = sec("process", f"""  <div class="page-body split">
+    <h2 class="reveal">How it works</h2>
+    <ol class="steps reveal">{steps_html}</ol>
+  </div>""", "", "process")
+
+        work_html = "" if p.get("no_credits") else sec("work", f"""  <div class="page-body split">
+    <div class="reveal">
+      <h2>Studio credits</h2>
+      <ul class="credits" style="margin-top:24px">{credits}</ul>
+    </div>
+    <div class="reveal">{work_right}</div>
+  </div>""", "", "work")
+
+        pricing_html = sec("pricing", f"""  <div class="page-body split">
+    <h2 class="reveal">Pricing</h2>
+    <div class="reveal">
+      <div class="prices">{prices_html}</div>
+      <p class="price-note">Every booking includes unlimited revisions. Working on an EP or album? Mention it in the form and I'll put together a project quote.</p>
+    </div>
+  </div>""", "", "pricing")
+
+        faq_section = sec("faq", f"""  <div class="page-body split">
+    <h2 class="reveal">Questions</h2>
+    <div class="faq reveal">{faq_html}</div>
+  </div>""", "", "faq")
+
+        cta_html = sec("cta", f"""  <div class="page-cta reveal">
+    <h2 class="h2">Ready to Hear Your Song <span class="accent">at Its Best?</span></h2>
+    <p class="lede">Tell me about your project and I'll get back to you within 24 hours.</p>
+    <a href="#" class="btn btn-lg" data-open-intake>Start Your Project <span class="arrow">→</span></a>
+    <div class="more-links" style="justify-content:center;margin-top:48px">{others}</div>
+  </div>""", " page-cta-section")
+
+        order = [feature_html, intro_html, ab_html, board_html, process_html, work_html, pricing_html]
+        order += [cta_html, faq_section] if p.get("faq_last") else [faq_section, cta_html]
+        sections_html = "\n".join(x for x in order if x)
 
         page = f"""<!doctype html>
 <html lang="en">
@@ -352,58 +412,7 @@ def build():
   </div>
 </section>
 
-{feature_html}
-<section class="section">
-  <div class="page-body split">
-    <h2 class="reveal">{esc(p['intro_h'])}</h2>
-    <div class="prose reveal">{''.join(f'<p>{x}</p>' for x in p['intro'])}</div>
-  </div>
-</section>
-
-{ab_html}{board_html}
-<section class="section" id="process">
-  <div class="page-body split">
-    <h2 class="reveal">How it works</h2>
-    <ol class="steps reveal">{steps_html}</ol>
-  </div>
-</section>
-
-<section class="section" id="work">
-  <div class="page-body split">
-    <div class="reveal">
-      <h2>Studio credits</h2>
-      <ul class="credits" style="margin-top:24px">{credits}</ul>
-    </div>
-    <div class="reveal">{work_right}</div>
-  </div>
-</section>
-
-<section class="section" id="pricing">
-  <div class="page-body split">
-    <h2 class="reveal">Pricing</h2>
-    <div class="reveal">
-      <div class="prices">{prices_html}</div>
-      <p class="price-note">Every booking includes unlimited revisions. Working on an EP or album? Mention it in the form and I'll put together a project quote.</p>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="faq">
-  <div class="page-body split">
-    <h2 class="reveal">Questions</h2>
-    <div class="faq reveal">{faq_html}</div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="page-cta reveal">
-    <h2 class="h2">Ready to Hear Your Song <span class="accent">at Its Best?</span></h2>
-    <p class="lede">Tell me about your project and I'll get back to you within 24 hours.</p>
-    <a href="#" class="btn btn-lg" data-open-intake>Start Your Project <span class="arrow">→</span></a>
-    <div class="more-links" style="justify-content:center;margin-top:48px">{others}</div>
-  </div>
-</section>
-
+{sections_html}
 </main>
 
 {footer.strip()}

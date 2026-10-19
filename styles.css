@@ -730,6 +730,23 @@ body.modal-open{overflow:hidden}
 .page-hero.tall .bg-media video{filter:brightness(.62) saturate(.95)}
 .page-hero.tall .bg-shade{background:linear-gradient(180deg,rgba(6,4,9,.45) 0%,rgba(6,4,9,.2) 35%,rgba(6,4,9,.55) 70%,var(--bg) 100%)}
 .feature{padding-top:clamp(56px,7vw,96px)}
+.feature-title{font-weight:700;font-size:clamp(26px,3.2vw,40px);letter-spacing:-0.02em;line-height:1.15;margin-bottom:clamp(18px,2.4vw,28px)}
+.fv-bar{display:flex;align-items:center;justify-content:space-between;gap:16px 24px;flex-wrap:wrap;margin-top:18px}
+.fv-credit{font-size:15px;color:var(--ink-soft)}
+.fv-credit strong{color:#fff;font-weight:600}
+.fv-ab{display:flex;align-items:center;gap:14px}
+.fv-ab-label{font-size:13px;color:var(--ink-faint)}
+.feature-video.before-on{box-shadow:0 0 0 1px rgba(255,255,255,.18),0 40px 90px -30px rgba(0,0,0,.85)}
+/* sections with a looping video behind them */
+.section.has-loop .bg-media video{filter:saturate(.9)}
+.section.has-loop .bg-shade{background:linear-gradient(180deg,var(--bg) 0%,rgba(6,4,9,.8) 16%,rgba(6,4,9,.8) 84%,var(--bg) 100%)}
+.page-cta-section.has-loop .bg-shade{background:linear-gradient(180deg,var(--bg) 0%,rgba(6,4,9,.55) 18%,rgba(6,4,9,.6) 82%,var(--bg) 100%)}
+@media(max-width:640px){
+  .fv-bar{flex-direction:column;align-items:stretch}
+  .fv-ab{flex-direction:column;align-items:stretch;gap:8px}
+  .fv-ab-label{text-align:center}
+  .fv-ab .ab-toggle{max-width:none}
+}
 .feature .page-body{max-width:1120px}
 .feature-head{margin-bottom:clamp(20px,2.6vw,30px)}
 .eyebrow{font-size:13px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--purple-bright);margin-bottom:12px}
@@ -746,7 +763,6 @@ body.modal-open{overflow:hidden}
 .fv-play:hover .fv-icon{transform:scale(1.06)}
 .fv-label{font-weight:600;font-size:13px;letter-spacing:.18em;text-transform:uppercase;text-shadow:0 2px 12px rgba(0,0,0,.6)}
 .feature-video.started .fv-play{opacity:0;pointer-events:none}
-.feature-note{margin-top:16px;font-size:14px;color:var(--ink-faint)}
 .genre-listen .players{max-width:780px}
 .genre-listen .h2{font-size:clamp(32px,4.2vw,54px)}
 .genre-board .board-mixes{margin-bottom:0}

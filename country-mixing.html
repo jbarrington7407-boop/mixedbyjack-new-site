@@ -21,8 +21,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles.css?v=202610181835">
-<script src="/analytics.js?v=202610181835"></script>
+<link rel="stylesheet" href="/styles.css?v=202610182030">
+<script src="/analytics.js?v=202610182030"></script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -169,38 +169,33 @@
 
 <section class="section feature" id="featured">
   <div class="page-body">
-    <header class="feature-head reveal">
-      <p class="eyebrow">Official live video</p>
-      <h2>Met Your Match <span>Jakota Wass</span></h2>
-    </header>
-    <div class="feature-video reveal" data-title="Jakota Wass - Met Your Match">
+    <h2 class="feature-title reveal">Recent recording/mix I&#x27;ve done</h2>
+    <div class="feature-video reveal" data-title="Jakota Wass - Met Your Match (Live)">
       <video preload="none" playsinline poster="/assets/country/met-your-match-poster.jpg"><source src="/assets/country/met-your-match-live.mp4" type="video/mp4"></video>
-      <button class="fv-play" type="button" aria-label="Play Met Your Match by Jakota Wass">
+      <audio class="fv-before" preload="none" src="/assets/country/met-your-match-before.m4a"></audio>
+      <button class="fv-play" type="button" aria-label="Play Met Your Match (Live) by Jakota Wass">
         <span class="fv-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg></span>
-        <span class="fv-label">Watch the live session</span>
       </button>
     </div>
-    <p class="feature-note reveal">Live session mixed by Jack. Headphones recommended.</p>
+    <div class="fv-bar reveal">
+      <p class="fv-credit"><strong>Jakota Wass</strong> &middot; Met Your Match (Live)</p>
+      <div class="fv-ab"><span class="fv-ab-label">Raw tracks vs. final mix</span><div class="ab-toggle" data-state="after"><div class="thumb"></div><button type="button" data-version="before" aria-pressed="false">BEFORE</button><button type="button" class="active" data-version="after" aria-pressed="true">AFTER</button></div></div>
+    </div>
   </div>
 </section>
 
-<section class="section">
+<section class="section has-loop">
+  <div class="bg-media" aria-hidden="true"><video autoplay muted loop playsinline preload="metadata" poster="/assets/country/loop-vocal.jpg"><source src="/assets/country/loop-vocal.mp4" type="video/mp4"></video></div>
+  <div class="bg-shade" aria-hidden="true"></div>
   <div class="page-body split">
-    <h2 class="reveal">Country is what I mix every week</h2>
-    <div class="prose reveal"><p>I'm currently the primary front-of-house engineer for a national country act, and I've mixed front of house for <strong>Lonestar</strong> and worked shows for <strong>Josh Turner</strong>. Country lives and dies by the vocal and the story, and that's where every one of my mixes starts.</p><p>In the studio I've mixed country for <strong>Jakota Wass</strong>. Send me your raw multitracks and I'll build a mix that keeps the song front and center, with as many revisions as it takes.</p></div>
+    <h2 class="reveal">Country is most of what I mix</h2>
+    <div class="prose reveal"><p>I run front of house for <strong>Jakota Wass</strong>, so most weeks I'm mixing country for a live crowd. I've also mixed front of house for <strong>Lonestar</strong> and worked shows with <strong>Josh Turner</strong>.</p><p>That carries over to the studio. I start with the vocal and the song, then build the band around it so it sounds like they're in the room with you. Send me your tracks and we'll keep going until it sounds right to you.</p></div>
   </div>
 </section>
 
-<section class="section genre-listen">
-  <div class="wrap">
-    <header class="section-head reveal">
-      <h2 class="h2">Same song, raw to release</h2>
-      <p class="lede">The rough tracks from Met Your Match next to the final mix. Hit play, then flip between Before and After.</p>
-    </header>
-    <div class="players" id="players" data-tracks="Met Your Match"></div>
-  </div>
-</section>
-<section class="section genre-board">
+<section class="section genre-board has-loop">
+  <div class="bg-media" aria-hidden="true"><video autoplay muted loop playsinline preload="metadata" poster="/assets/country/loop-crowd.jpg"><source src="/assets/country/loop-crowd.mp4" type="video/mp4"></video></div>
+  <div class="bg-shade" aria-hidden="true"></div>
   <div class="board-mixes" id="board-mixes">
     <header class="board-head reveal">
       <h3 class="clients-title">Straight from the board</h3>
@@ -210,20 +205,12 @@
   </div>
 </section>
 
-<section class="section" id="process">
+<section class="section has-loop" id="process">
+  <div class="bg-media" aria-hidden="true"><video autoplay muted loop playsinline preload="metadata" poster="/assets/country/loop-rack.jpg"><source src="/assets/country/loop-rack.mp4" type="video/mp4"></video></div>
+  <div class="bg-shade" aria-hidden="true"></div>
   <div class="page-body split">
     <h2 class="reveal">How it works</h2>
     <ol class="steps reveal"><li><h3>Send your tracks</h3><p>Fill out the project form and share a link to your raw multitrack WAV files (Dropbox, Google Drive, or WeTransfer). Export every track from the same starting point so everything lines up.</p></li><li><h3>First mix in 7 days</h3><p>I listen through, get a feel for the song, and send you the first version of your mix within 7 days.</p></li><li><h3>Revisions until you&#x27;re happy</h3><p>Send me notes and I&#x27;ll keep refining it. There&#x27;s no cap on revisions. We keep going until it sounds the way you heard it in your head.</p></li><li><h3>Get your final WAV</h3><p>Once you sign off, you get one finished WAV file per song, ready for mastering or release.</p></li></ol>
-  </div>
-</section>
-
-<section class="section" id="work">
-  <div class="page-body split">
-    <div class="reveal">
-      <h2>Studio credits</h2>
-      <ul class="credits" style="margin-top:24px"><li><span>Jakota Wass</span><span>Country</span></li></ul>
-    </div>
-    <div class="reveal"><div class="prose"><p>Want to hear more? The homepage has more before and after comparisons, live board mixes, and the full client list.</p><p><a class="btn btn-ghost" href="/#portfolio">See the Portfolio <span class="arrow">→</span></a></p></div></div>
   </div>
 </section>
 
@@ -237,19 +224,23 @@
   </div>
 </section>
 
-<section class="section" id="faq">
-  <div class="page-body split">
-    <h2 class="reveal">Questions</h2>
-    <div class="faq reveal"><details><summary>How long does a mix take?</summary><p>You'll get the first version of your mix within 7 days of sending your files.</p></details><details><summary>How many revisions do I get?</summary><p>As many as you need. I'll keep making changes until you're happy with the mix.</p></details><details><summary>What files do I need to send?</summary><p>All of your raw multitrack files as WAVs, exported from the same starting point so they line up. You can share them through Dropbox, Google Drive, or WeTransfer.</p></details><details><summary>What do I get back?</summary><p>One finished WAV file for each song.</p></details><details><summary>Do you work with artists outside the US?</summary><p>Yes. Everything happens online, and I've worked with artists across six continents.</p></details><details><summary>Is mastering included?</summary><p>Mixing and mastering are booked separately, but they're cheaper when you bundle them together.</p></details></div>
-  </div>
-</section>
-
-<section class="section">
+<section class="section page-cta-section has-loop">
+  <div class="bg-media" aria-hidden="true"><video autoplay muted loop playsinline preload="metadata" poster="/assets/cta-bg-poster.jpg"><source src="/assets/cta-bg.mp4" type="video/mp4"></video></div>
+  <div class="bg-shade" aria-hidden="true"></div>
   <div class="page-cta reveal">
     <h2 class="h2">Ready to Hear Your Song <span class="accent">at Its Best?</span></h2>
     <p class="lede">Tell me about your project and I'll get back to you within 24 hours.</p>
     <a href="#" class="btn btn-lg" data-open-intake>Start Your Project <span class="arrow">→</span></a>
     <div class="more-links" style="justify-content:center;margin-top:48px"><a href="/online-mixing">Online Mixing</a><a href="/online-mastering">Online Mastering</a><a href="/rock-mixing">Rock Mixing</a><a href="/indie-pop-mixing">Indie &amp; Pop Mixing</a></div>
+  </div>
+</section>
+
+<section class="section has-loop" id="faq">
+  <div class="bg-media" aria-hidden="true"><video autoplay muted loop playsinline preload="metadata" poster="/assets/country/loop-desk.jpg"><source src="/assets/country/loop-desk.mp4" type="video/mp4"></video></div>
+  <div class="bg-shade" aria-hidden="true"></div>
+  <div class="page-body split">
+    <h2 class="reveal">Questions</h2>
+    <div class="faq reveal"><details><summary>How long does a mix take?</summary><p>You'll get the first version of your mix within 7 days of sending your files.</p></details><details><summary>How many revisions do I get?</summary><p>As many as you need. I'll keep making changes until you're happy with the mix.</p></details><details><summary>What files do I need to send?</summary><p>All of your raw multitrack files as WAVs, exported from the same starting point so they line up. You can share them through Dropbox, Google Drive, or WeTransfer.</p></details><details><summary>What do I get back?</summary><p>One finished WAV file for each song.</p></details><details><summary>Do you work with artists outside the US?</summary><p>Yes. Everything happens online, and I've worked with artists across six continents.</p></details><details><summary>Is mastering included?</summary><p>Mixing and mastering are booked separately, but they're cheaper when you bundle them together.</p></details></div>
   </div>
 </section>
 
@@ -400,6 +391,6 @@
   </div>
 </div>
 
-<script src="/main.js?v=202610181835"></script>
+<script src="/main.js?v=202610182030"></script>
 </body>
 </html>

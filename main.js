@@ -703,20 +703,94 @@ document.querySelectorAll('a[href="#clients"], a[href="#board-mixes"]').forEach(
 });
 
 /* =========================================================
-   Featured video (genre pages): big play button, then native controls
+   Featured video (genre pages): big play button, then native controls.
+   Optional Before/After: a separate "before" audio file plays in sync with
+   the video, and the toggle switches which one you hear.
    ========================================================= */
 document.querySelectorAll(".feature-video").forEach(function(box){
   var v = box.querySelector("video"), btn = box.querySelector(".fv-play");
   if (!v || !btn) return;
-  var tracked = false, api = { pause: function(){ v.pause(); } };
+  var before = box.querySelector("audio.fv-before");
+  var bar = box.parentNode.querySelector(".fv-ab");
+  var toggle = bar && bar.querySelector(".ab-toggle");
+  var state = "after", tracked = false, trackedCompare = false;
+  var api = { pause: function(){ v.pause(); } };
   ALL_PLAYERS.push(api);   // other players pause this video when they start
+
+  /* Both keep playing in sync; flipping just mutes one and unmutes the other.
+     (Plain muting works everywhere, including iPhones on silent mode.) */
+  function applyState(){
+    var b = state === "before";
+    if (before){ v.muted = b; before.muted = !b; }
+    box.classList.toggle("before-on", b);
+    if (toggle){
+      toggle.setAttribute("data-state", state);
+      toggle.querySelectorAll("button").forEach(function(x){
+        var on = x.getAttribute("data-version") === state;
+        x.classList.toggle("active", on); x.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+    }
+  }
+  function sync(force){
+    if (!before || before.readyState < 1) return;
+    if (force || Math.abs(before.currentTime - v.currentTime) > 0.08){
+      try { before.currentTime = v.currentTime; } catch (e) {}
+    }
+  }
+  function startBefore(){
+    if (!before || v.paused) return;
+    before.playbackRate = v.playbackRate;
+    sync(true);
+    var pr = before.play(); if (pr && pr.catch) pr.catch(function(){});
+  }
+  function setState(next){
+    if (next === state) return;
+    state = next;
+    if (state === "before") sync(true);
+    applyState();
+    if (!trackedCompare){ trackedCompare = true; sendEvent("ab_compare", { track: box.getAttribute("data-title") || "" }); }
+  }
+
   btn.addEventListener("click", function(){
+    if (before){ before.preload = "auto"; before.load(); }
     v.setAttribute("controls", "");
     var pr = v.play(); if (pr && pr.catch) pr.catch(function(){});
   });
   v.addEventListener("play", function(){
     box.classList.add("started");
     ALL_PLAYERS.forEach(function(p){ if (p !== api) p.pause(); });
+    if (before) startBefore();
     if (!tracked){ tracked = true; sendEvent("video_play", { video: box.getAttribute("data-title") || "" }); }
   });
+
+  if (!before) return;
+  v.addEventListener("pause", function(){ before.pause(); });
+  v.addEventListener("ended", function(){ before.pause(); });
+  v.addEventListener("waiting", function(){ before.pause(); });
+  v.addEventListener("playing", startBefore);
+  v.addEventListener("seeking", function(){ sync(true); });
+  v.addEventListener("seeked", function(){ sync(true); });
+  v.addEventListener("ratechange", function(){ before.playbackRate = v.playbackRate; });
+  // Unmuting the video with its own controls while on Before means "let me hear the mix"
+  v.addEventListener("volumechange", function(){
+    before.volume = v.volume;
+    if (state === "before" && !v.muted){ state = "after"; applyState(); }
+  });
+  setInterval(function(){ if (!v.paused && !before.paused) sync(false); }, 400);
+  before.addEventListener("error", function(){ if (bar) bar.style.display = "none"; state = "after"; applyState(); });
+
+  if (toggle){
+    toggle.querySelectorAll("button").forEach(function(x){
+      x.addEventListener("click", function(){ setState(x.getAttribute("data-version")); });
+    });
+  }
+  // B / A keys switch while the video is playing (also works in full screen)
+  document.addEventListener("keydown", function(e){
+    if (!box.classList.contains("started") || e.metaKey || e.ctrlKey || e.altKey) return;
+    var tag = (e.target && e.target.tagName) || "";
+    if (/INPUT|TEXTAREA|SELECT/.test(tag)) return;
+    var k = (e.key || "").toLowerCase();
+    if (k === "b") setState("before"); else if (k === "a") setState("after");
+  });
+  applyState();
 });
