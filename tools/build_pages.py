@@ -115,7 +115,7 @@ PAGES = [
         "desc": "Online country mixing by Jack Barrington, primary FOH engineer for a national country act. Studio work with Jakota Wass. First mix in 7 days, unlimited revisions.",
         "crumb": "Country Mixing",
         "h1": "Country Mixing",
-        "lede": "Clear, honest vocals and a band that feels like it's playing in the room with you. Mixed online by the front-of-house engineer for a national country act.",
+        "lede": "Online mixing for country artists, from an engineer who mixes country every week, live and in the studio.",
         "bg": "assets/live-card.jpg",
         "hero_video": ("assets/country/hero-guitar.mp4", "assets/country/hero-guitar.jpg"),
         "feature": {
@@ -125,6 +125,7 @@ PAGES = [
             "src": "assets/country/met-your-match-live.mp4",
             "poster": "assets/country/met-your-match-poster.jpg",
             "before": "assets/country/met-your-match-before.m4a",
+            "before_v": "2",
         },
         "board": {"tracks": ["Time Loving You", "Redneck Man"], "h": "Straight from the board",
                   "lede": "Two-track recordings pulled off the front-of-house console at Jakota Wass shows."},
@@ -288,7 +289,8 @@ def build():
         if p.get("feature") and has(p["feature"]["src"]):
             f = p["feature"]
             ab = f.get("before") and has(f["before"])
-            before_el = f'\n      <audio class="fv-before" preload="none" src="/{f["before"]}"></audio>' if ab else ""
+            ver = f'?v={f["before_v"]}' if f.get("before_v") else ""
+            before_el = f'\n      <audio class="fv-before" preload="none" src="/{f["before"]}{ver}"></audio>' if ab else ""
             toggle = ('\n      <div class="fv-ab"><span class="fv-ab-label">Flip between the raw tracks and the final mix</span>'
                       '<div class="ab-toggle fv-toggle" data-state="after"><div class="thumb"></div>'
                       '<button type="button" data-version="before" aria-pressed="false">Before</button>'
