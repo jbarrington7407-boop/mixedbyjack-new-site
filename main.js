@@ -748,6 +748,7 @@ document.querySelectorAll(".feature-video").forEach(function(box){
     state = next;
     if (state === "before") sync(true);
     applyState();
+    box.classList.remove("untried");
     if (!trackedCompare){ trackedCompare = true; sendEvent("ab_compare", { track: box.getAttribute("data-title") || "" }); }
   }
 
@@ -780,6 +781,7 @@ document.querySelectorAll(".feature-video").forEach(function(box){
   before.addEventListener("error", function(){ if (bar) bar.style.display = "none"; state = "after"; applyState(); });
 
   if (toggle){
+    box.classList.add("untried");
     toggle.querySelectorAll("button").forEach(function(x){
       x.addEventListener("click", function(){ setState(x.getAttribute("data-version")); });
     });

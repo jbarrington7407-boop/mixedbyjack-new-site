@@ -141,7 +141,7 @@ PAGES = [
         "service": ("Country mixing", "Country music mixing"),
         "intro_h": "Country is most of what I mix",
         "intro": [
-            "I run front of house for <strong>Jakota Wass</strong>, so most weeks I'm mixing country for a live crowd. I've also mixed front of house for <strong>Lonestar</strong> and worked shows with <strong>Josh Turner</strong>.",
+            "I run front of house for a national country act, so most weeks I'm mixing for a live crowd. I've also mixed front of house for <strong>Lonestar</strong> and worked shows with <strong>Josh Turner</strong>, <strong>Michael Ray</strong>, and <strong>Ryan Bingham</strong>, to name a few.",
             "That carries over to the studio. I start with the vocal and the song, then build the band around it so it sounds like they're in the room with you. Send me your tracks and we'll keep going until it sounds right to you.",
         ],
         "work": [],
@@ -289,14 +289,16 @@ def build():
             f = p["feature"]
             ab = f.get("before") and has(f["before"])
             before_el = f'\n      <audio class="fv-before" preload="none" src="/{f["before"]}"></audio>' if ab else ""
-            toggle = ('\n      <div class="fv-ab"><span class="fv-ab-label">Raw tracks vs. final mix</span>'
-                      '<div class="ab-toggle" data-state="after"><div class="thumb"></div>'
-                      '<button type="button" data-version="before" aria-pressed="false">BEFORE</button>'
-                      '<button type="button" class="active" data-version="after" aria-pressed="true">AFTER</button></div></div>') if ab else ""
+            toggle = ('\n      <div class="fv-ab"><span class="fv-ab-label">Flip between the raw tracks and the final mix</span>'
+                      '<div class="ab-toggle fv-toggle" data-state="after"><div class="thumb"></div>'
+                      '<button type="button" data-version="before" aria-pressed="false">Before</button>'
+                      '<button type="button" class="active" data-version="after" aria-pressed="true">After</button></div></div>') if ab else ""
+            badge = ('\n      <span class="fv-badge" aria-hidden="true"><i></i><b class="b-before">Before &middot; raw tracks</b>'
+                     '<b class="b-after">After &middot; final mix</b></span>') if ab else ""
             feature_html = sec("feature", f"""  <div class="page-body">
     <h2 class="feature-title reveal">{esc(f['heading'])}</h2>
     <div class="feature-video reveal" data-title="{esc(f['artist'] + ' - ' + f['title'])}">
-      <video preload="none" playsinline poster="/{f['poster']}"><source src="/{f['src']}" type="video/mp4"></video>{before_el}
+      <video preload="none" playsinline poster="/{f['poster']}"><source src="/{f['src']}" type="video/mp4"></video>{before_el}{badge}
       <button class="fv-play" type="button" aria-label="Play {esc(f['title'])} by {esc(f['artist'])}">
         <span class="fv-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg></span>
       </button>
