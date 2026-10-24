@@ -836,3 +836,38 @@ video::-webkit-media-controls-start-playback-button{display:none!important;-webk
 video::-webkit-media-controls{display:none!important}
 .feature-video video::-webkit-media-controls{display:flex!important}
 .play-btn::before{display:none}
+
+/* About divider animation removed: keep the gap on desktop, drop it on phones */
+.wave canvas{display:none}
+
+/* Highlighted words: logo purple, extra weight and a hard print-style shadow
+   (no glow) so they stand off the dark background */
+.accent,.about-text .hello span{font-weight:800;text-shadow:.045em .05em 0 #24164F}
+.hero h1 .accent{text-shadow:.04em .045em 0 #24164F}
+
+/* Phones: center text and buttons */
+@media (max-width:760px){
+  .wave{display:none}
+  .about-text,.about-row.right .about-text{text-align:center;margin:0 auto}
+  .about-ctas,.about-row.right .about-ctas{justify-content:center}
+  .svc-body{text-align:center;align-items:center}
+  .svc .btn{align-self:center}
+  .quote,.quote.right{text-align:center;border:0;padding-left:0;padding-right:0;margin-left:auto;margin-right:auto}
+  .live-cta{align-items:center}
+  .page-hero-inner{text-align:center}
+  .page-hero .lede{text-align:center;margin-left:auto;margin-right:auto}
+  .page-hero .hero-ctas{justify-content:center}
+  .page-body.split,.page-body.split h2,.prose,.feature-title,.fv-credit{text-align:center}
+  .prose .intro-cta{display:flex;justify-content:center}
+  .fv-ab{align-items:center}
+  .steps li{border-left:0;margin-left:0;padding:0 0 26px;text-align:center}
+  .steps li::before{position:static;margin:0 auto 10px}
+  .price-row{align-items:center;text-align:center}
+  .faq summary{text-align:center;justify-content:center}
+  .faq details p{text-align:center;margin-left:auto;margin-right:auto}
+  .board-head,.clients-title{text-align:center}
+  .footer{text-align:center}
+  .release,.release *{text-align:center}
+  .release-info,.release.right .release-info{border-left:0!important;border-right:0!important;padding-left:0!important;padding-right:0!important;margin-left:auto;margin-right:auto}
+  .client-group h3{text-align:center}
+}
