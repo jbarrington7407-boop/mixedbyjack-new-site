@@ -134,21 +134,30 @@ var ALL_PLAYERS = [];
 })();
 
 /* =========================================================
-   About: animated sound-wave dividers (drawn, no video file)
+   About: dividers drawn like the logo (rounded bars and a dot), with bar
+   lengths following the real levels of the Met Your Match mix as it scrolls
    ========================================================= */
 (function(){
   var canvases = document.querySelectorAll(".wave canvas");
   if (!canvases.length) return;
+  var LEVELS = "000000000000012122221221212221222221122222221222111221222666566668777777785777677867777778677766677665666865776567555555586777777878887777777766777666776677766665855566658566655586667667785777767687788878777778888887778886777767666777787787777878777757676876787778888878888878788887788887877866788888787776788777776776777678888878888887788887778788878887778788888786877878867788777687888888788887887877688878788788777777777777777777667679887776788778877887788866877775589788887698778888978888888777778795787787877888789776888787887877987778787966788888888877787787777988888879888888887888777877887888888888888878888987888877867777769788878886888788977787778878877897778778977788879888877687777877987888788888888778788877787778876978888889788888898888888878778769777777797888888887888877877777779777887787777777776776678666666686777666866687778677766677666667777778777867687668677666686666666867665777676765487548855977777778787878787778866976887778888876588776887677778878988886678788787797887876878888889888877788888877988777768777887788788765887888778978887688778888898888878888777889788677788888888977788887778887788777888888887788988888888778877788767777877787778787866798878787887788889777887787777778988888888887777779788887877777787967787888778887798777787877888878877877888556877798888877876777779887887798888888988888878677888797887888888888889888888887788888876887888878887888777788888787788878887888867887798888887877786669878988888888887887878877877777779888888887788878988887888778777697777777977888889888887788778888988878878888788778776777687778777877677768777787786777877877777689777687778777668797757776877786779776777586787767977777677677788798787877878887779777677777777777887778878877777788777877887887787877787769887776798877878877777779777677687777778876778778878776888777887887788777787887777777666877787876988888888888888777778668877877879778888888888888888888888888887889778888798888777988776789987887698888887987788768677777798888887898787877978888778776787696887788878888789778777888777878887787788877788798888888787877778988798888788888788788887877777769888888887887877988887888888777797777777888888888888888879777888897779897878888878678687687777777977778779787888788888887887779888888888788788888787777776877777779676687687778888977887777766686768777777787878886877777658778786696787777868697639764887698878787877877667777777777666666666655555555554444444433233322323222111100000000000000000000000000000000000000000000000000000000000000000000";   // 12 values per second, 0-9
+  var RATE = 12, N = LEVELS.length, LOGO = "#8B5CF6";
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var LAYERS = [
-    { amp:1,   phase:0,   rgb:"192,132,252", alpha:.55, width:1.6 },
-    { amp:.72, phase:2.1, rgb:"139,92,246",  alpha:.34, width:1.2 },
-    { amp:.48, phase:4.3, rgb:"217,70,239",  alpha:.2,  width:1 }
-  ];
+  // logo pattern: short bar, long bar, short bar, dot
+  var PATTERN = [34/54, 1, 34/54, "dot"];
+  function level(t){ var i = Math.floor(t * RATE) % N; if (i < 0) i += N; return (+LEVELS.charAt(i)) / 9; }
+  function pill(ctx, x, y, w, h){
+    var r = Math.min(h, w) / 2;
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath(); ctx.fill();
+  }
   canvases.forEach(function(cv, idx){
     var ctx = cv.getContext("2d");
     if (!ctx) return;
-    var w = 0, h = 0, visible = false, raf = 0, seed = idx * 7.31, start = performance.now();
+    var w = 0, h = 0, visible = false, raf = 0, start = performance.now() - idx * 41000;
     function size(){
       var dpr = Math.min(window.devicePixelRatio || 1, 2);
       w = cv.clientWidth; h = cv.clientHeight;
@@ -159,29 +168,29 @@ var ALL_PLAYERS = [];
       raf = 0;
       var t = (now - start) / 1000;
       ctx.clearRect(0, 0, w, h);
-      var vertical = h >= w, len = vertical ? h : w, cross = vertical ? w : h, mid = cross / 2;
-      var steps = Math.max(80, Math.round(len / 3));
-      LAYERS.forEach(function(L){
-        ctx.beginPath();
-        for (var i = 0; i <= steps; i++){
-          var u = i / steps, pos = u * len;
-          var edge = Math.sin(Math.PI * u); edge *= edge;                       // fade out at both ends
-          var swell = .35 + .65 * Math.pow(.5 + .5 * Math.sin(u * 4.6 - t * .9 + seed + L.phase * .25), 2); // loudness travelling along the line
-          var v = Math.sin(u * 34 + t * 2.4 + L.phase + seed) * .55
-                + Math.sin(u * 83 - t * 3.6 + L.phase * 1.7) * .28
-                + Math.sin(u * 11 + t * 1.1 + seed) * .17;
-          var off = v * swell * edge * cross * .36 * L.amp;
-          var x = vertical ? mid + off : pos, y = vertical ? pos : mid + off;
-          if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y);
+      var vertical = h >= w, len = vertical ? h : w, cross = vertical ? w : h;
+      var thick = 6, pitch = 14, speed = 16, maxLen = Math.min(cross * .82, 76);
+      var shift = (t * speed) % (pitch * PATTERN.length);
+      ctx.fillStyle = LOGO;
+      for (var p = -pitch * PATTERN.length; p < len + pitch; p += pitch){
+        var pos = p + shift;                                   // moves toward the bottom / right
+        var row = Math.round((p + pitch * PATTERN.length) / pitch) % PATTERN.length;
+        var u = pos / len; if (u < 0 || u > 1) continue;
+        var fade = Math.min(1, u / .16, (1 - u) / .16);       // soft ends
+        ctx.globalAlpha = Math.max(0, fade);
+        var kind = PATTERN[(PATTERN.length - row) % PATTERN.length];
+        var c = cross / 2;
+        if (kind === "dot"){
+          ctx.beginPath();
+          if (vertical) ctx.arc(c, pos, thick * .95, 0, Math.PI * 2); else ctx.arc(pos, c, thick * .95, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          var lv = level(t - pos / speed);
+          var L = Math.max(thick * 1.6, maxLen * kind * (.3 + .7 * lv));
+          if (vertical) pill(ctx, c - L/2, pos - thick/2, L, thick); else pill(ctx, pos - thick/2, c - L/2, thick, L);
         }
-        var g = vertical ? ctx.createLinearGradient(0, 0, 0, h) : ctx.createLinearGradient(0, 0, w, 0);
-        g.addColorStop(0, "rgba(" + L.rgb + ",0)");
-        g.addColorStop(.22, "rgba(" + L.rgb + "," + L.alpha + ")");
-        g.addColorStop(.78, "rgba(" + L.rgb + "," + L.alpha + ")");
-        g.addColorStop(1, "rgba(" + L.rgb + ",0)");
-        ctx.strokeStyle = g; ctx.lineWidth = L.width; ctx.lineJoin = "round"; ctx.lineCap = "round";
-        ctx.stroke();
-      });
+      }
+      ctx.globalAlpha = 1;
       if (visible && !reduce) raf = requestAnimationFrame(frame);
     }
     function kick(){ if (!raf) raf = requestAnimationFrame(frame); }
