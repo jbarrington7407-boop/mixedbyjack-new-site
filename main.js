@@ -885,3 +885,15 @@ document.querySelectorAll(".feature-video").forEach(function(box){
   });
   applyState();
 });
+
+/* Background loops: iPhones in Low Power Mode won't autoplay them, so start
+   them on the visitor's first tap or scroll touch instead. */
+(function(){
+  function kick(){
+    document.querySelectorAll("video[autoplay]").forEach(function(v){
+      if (v.paused){ var p = v.play(); if (p && p.catch) p.catch(function(){}); }
+    });
+    ["touchstart","click"].forEach(function(ev){ document.removeEventListener(ev, kick, true); });
+  }
+  ["touchstart","click"].forEach(function(ev){ document.addEventListener(ev, kick, { capture:true, passive:true }); });
+})();
