@@ -848,11 +848,12 @@ video::-webkit-media-controls{display:none!important}
 /* Phones: center text and buttons */
 @media (max-width:760px){
   .wave{display:none}
+  .about-row,.about-row.right{gap:34px}
+  .about-text .hello{margin-bottom:18px}
   .about-text,.about-row.right .about-text{text-align:center;margin:0 auto}
   .about-ctas,.about-row.right .about-ctas{justify-content:center}
   .svc-body{text-align:center;align-items:center}
   .svc .btn{align-self:center}
-  .quote,.quote.right{text-align:center;border:0;padding-left:0;padding-right:0;margin-left:auto;margin-right:auto}
   .live-cta{align-items:center}
   .page-hero-inner{text-align:center}
   .page-hero .lede{text-align:center;margin-left:auto;margin-right:auto}
